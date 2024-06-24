@@ -2,14 +2,12 @@ package ru.skypro.homework.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Objects;
 
 @Getter
 @Setter
 public class NewPassword {
-    private String oldPassword;
+    private String currentPassword;
     private String newPassword;
 
     @Override
@@ -17,11 +15,11 @@ public class NewPassword {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NewPassword that = (NewPassword) o;
-        return Objects.equals(oldPassword, that.oldPassword) && Objects.equals(newPassword, that.newPassword);
+        return Objects.equals(currentPassword, that.currentPassword) && Objects.equals(newPassword, that.newPassword);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(oldPassword, newPassword);
+        return Objects.hash(currentPassword, newPassword);
     }
 }
