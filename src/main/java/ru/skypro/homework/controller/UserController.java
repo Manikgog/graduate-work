@@ -6,17 +6,20 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.*;
+import ru.skypro.homework.dto.NewPassword;
+import ru.skypro.homework.dto.Role;
+import ru.skypro.homework.dto.UpdateUser;
+import ru.skypro.homework.dto.User;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.service.impl.UserServiceImpl;
 
 @RequestMapping("/users")
 @RestController
+@Tag(name = "Пользователи")
 public class UserController {
 
     private final UserService userService;
@@ -25,14 +28,33 @@ public class UserController {
         this.userService = userService;
     }
 
-    @Tag(name = "Пользователи")
+    @Operation(summary = "Обновление пароля" , responses = {
+            @ApiResponse(responseCode = "200",
+                    description = "OK",
+                    content = @Content()),
+            @ApiResponse(responseCode = "401",
+                    description = "Unauthorized",
+                    content = @Content()),
+            @ApiResponse(responseCode = "403",
+                    description = "Forbidden",
+                    content = @Content())
+    })
     @PostMapping("/set_password")
-    public ResponseEntity<HttpStatus> setPassword(@RequestBody NewPassword newPassword){
+    public ResponseEntity<?> setPassword(@RequestBody NewPassword newPassword){
         return ResponseEntity.ok().build();
-        //return userService.setNewPassword(newPassword) ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @Tag(name = "Пользователи")
+    @Operation(summary = "Получение информации об авторизованном пользователе" , responses = {
+            @ApiResponse(responseCode = "200",
+                    description = "OK",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = User.class)
+                    )),
+            @ApiResponse(responseCode = "401",
+                    description = "Unauthorized",
+            content = @Content())
+    })
     @GetMapping("/me")
     public ResponseEntity<User> getUser(){
         User user = new User();
@@ -44,66 +66,38 @@ public class UserController {
         user.setImage("/image");
         user.setRole(Role.USER);
         return ResponseEntity.ok(user);
-        //return ResponseEntity.ok(userService.getUser());
     }
 
-    @Tag(name = "Пользователи")
+    @Operation(summary = "Обновление информации об авторизованном пользователе",
+            responses = {
+            @ApiResponse(responseCode = "200",
+                    description = "OK",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = UpdateUser.class),
+                            examples = @ExampleObject(
+                                    description = "Информация о пользователе обновлена"
+                            )
+                    )),
+            @ApiResponse(responseCode = "401",
+                    description = "Unauthorized",
+                    content = @Content())
+    })
     @PatchMapping("/me")
-    public ResponseEntity<UserPatch> updateUser(@RequestBody UserPatch userPatch){
-        return ResponseEntity.ok(userPatch);
-        //return ResponseEntity.ok(userService.updateUser(userPatch));
+    public ResponseEntity<UpdateUser> updateUser(@RequestBody UpdateUser userPatch){
+        return ResponseEntity.ok().build();
     }
 
-    @Tag(name = "Пользователи")
+    @Operation(summary = "Обновление аватара авторизованного пользователя" , responses = {
+            @ApiResponse(responseCode = "200",
+                    description = "OK",
+                    content = @Content()),
+            @ApiResponse(responseCode = "401",
+            description = "Unauthorized",
+                    content = @Content())
+    })
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<User> updateImage(@RequestParam MultipartFile userPhoto) {
-        User user = new User();
-        user.setId(1);
-        user.setFirstName("FirstName");
-        user.setLastName("LastName");
-        user.setEmail("Email");
-        user.setPhone("Phone");
-        user.setImage("/image");
-        user.setRole(Role.USER);
-        return ResponseEntity.ok(user);
-        //return ResponseEntity.ok(userService.updateImage(userPhoto));
-    }
-
-    @Operation(summary = "Регистрация нового пользователя" , responses = {
-            @ApiResponse(responseCode = "200",
-                    description = "Регистрация пользователя прошла успешно",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = User.class),
-                            examples = @ExampleObject(
-                                    name = "Пользователь",
-                                    description = "Объект пользователя зарегистрирован"
-                            )
-                    ))
-    })
-    @Tag(name = "Регистрация")
-    @PostMapping("/register")
-    public ResponseEntity<UserRegister> registerUser(@RequestBody UserRegister userRegister) {
-        return ResponseEntity.ok(userRegister);
-        //return ResponseEntity.ok(userService.registerUser(userRegister));
-    }
-
-    @Operation(summary = "Авторизация пользователя", responses = {
-            @ApiResponse(responseCode = "200",
-                    description = "Авторизация пользователя прошла успешно",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = User.class),
-                            examples = @ExampleObject(
-                                    name = "Пользователь",
-                                    description = "Объект пользователя авторизован"
-                            )
-                    ))
-    })
-    @Tag(name = "Авторизация")
-    @PostMapping("/login")
-    public ResponseEntity<HttpStatus> loginUser(@RequestBody Login login) {
-        userService.loginUser(login);
+    public ResponseEntity<?> updateImage(@RequestParam MultipartFile image) {
         return ResponseEntity.ok().build();
     }
 

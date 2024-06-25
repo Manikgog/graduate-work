@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserPatch updateUser(UserPatch userPatch) {
+    public UpdateUser updateUser(UpdateUser userPatch) {
         return null;
     }
 
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRegister registerUser(UserRegister userRegister) {
+    public Register registerUser(Register userRegister) {
         return null;
     }
 

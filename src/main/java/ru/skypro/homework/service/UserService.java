@@ -8,11 +8,11 @@ public interface UserService {
 
     User getUser();
 
-    UserPatch updateUser(UserPatch userPatch);
+    UpdateUser updateUser(UpdateUser userPatch);
 
     User updateImage(MultipartFile animalPhoto);
 
-    UserRegister registerUser(UserRegister userRegister);
+    Register registerUser(Register register);
 
     void loginUser(Login login);
 }

@@ -7,9 +7,9 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class NewPassword {
-    @Schema(example = "stringst")
-    String currentPassword;
-    @Schema(example = "stringst")
-    String newPassword;
+public class UpdateUser {
+    String firstName;
+    String lastName;
+    @Schema(example = "+7 122309-68-63")
+    String phone;
 }
