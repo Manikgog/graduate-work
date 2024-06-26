@@ -9,18 +9,18 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Schema(description = "Сущность пользователя")
 public class User {
-    @Schema(description = "Идентификатор", example = "1")
+    @Schema(description = "id пользователя")
     long id;
-    @Schema(description = "Email", example = "example@mail.ru")
+    @Schema(description = "логин пользователя")
     String email;
-    @Schema(description = "Имя")
+    @Schema(description = "имя пользователя")
     String firstName;
-    @Schema(description = "Фамилия")
+    @Schema(description = "фамилия пользователя")
     String lastName;
-    @Schema(description = "Телефон", example = "+7 768 4177409")
+    @Schema(description = "телефон пользователя", example = "+7 768 4177409")
     String phone;
-    @Schema(description = "Роль", example = "USER")
+    @Schema(description = "роль пользователя")
     Role role;
-    @Schema(description = "Адрес файла с фотографией", example = "/image.jpg")
+    @Schema(description = "ссылка на аватар пользователя")
     String image;
 }

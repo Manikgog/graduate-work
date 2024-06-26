@@ -8,8 +8,8 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewPassword {
-    @Schema(example = "stringst")
+    @Schema(maxLength = 16, minLength = 8, description = "текущий пароль")
     String currentPassword;
-    @Schema(example = "stringst")
+    @Schema(maxLength = 16, minLength = 8, description = "новый пароль")
     String newPassword;
 }
