@@ -3,6 +3,7 @@ package ru.skypro.homework.service.impl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.Ad;
+import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.service.AdsService;
@@ -34,5 +35,20 @@ public class AdsServiceImpl implements AdsService{
 
     @Override
     public void deleteAd(int id) {
+    }
+
+    @Override
+    public List<String> updateImage(int id, MultipartFile image) {
+        return null;
+    }
+
+    @Override
+    public Comments getAdsAuthorizedUser(int id, CreateOrUpdateAd createOrUpdateAd) {
+        return null;
+    }
+
+    @Override
+    public Ad updateAds() {
+        return null;
     }
 }

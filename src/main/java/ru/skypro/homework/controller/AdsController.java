@@ -1,22 +1,19 @@
 package ru.skypro.homework.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.Ad;
-import ru.skypro.homework.dto.Ads;
-import ru.skypro.homework.dto.CreateOrUpdateAd;
-import ru.skypro.homework.dto.ExtendedAd;
+import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.impl.AdsServiceImpl;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ads")
@@ -73,5 +70,51 @@ public class AdsController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAds(@PathVariable("id") int id) {
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Обновление информации об объявлении", tags = {"Объявления"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ad.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content()),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
+    })
+    @PatchMapping("/{id}")
+    public ResponseEntity<Ad> updateAds(@PathVariable("id") int id, @RequestBody CreateOrUpdateAd createOrUpdateAd) {
+        return ResponseEntity.ok().body(new Ad());
+    }
+
+    @Operation(summary = "Получение объявлений авторизованного пользователя", tags = {"Объявления"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Comments.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content())
+    })
+    @GetMapping("/me")
+    public ResponseEntity<Comments> getAdsAuthorizedUser() {
+        return ResponseEntity.ok().body(new Comments());
+    }
+
+    @Operation(summary = "Обновление картинки объявления", tags = {"Объявления"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = "application/octet-stream",  array = @ArraySchema(schema = @Schema(implementation = byte[].class)))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content()),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
+    })
+
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<String>> updateImage(@PathVariable int id,
+                                                    @RequestPart(value = "image") MultipartFile image) {
+        return ResponseEntity.ok().body(new ArrayList<String>());
     }
 }

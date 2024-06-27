@@ -9,19 +9,19 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Ad {
     @JsonProperty("author")
-    @Schema(description = "id автора объявления", example = "1")
+    @Schema(description = "id автора объявления", example = "0")
     Long author;
     @JsonProperty("image")
-    @Schema(description = "ссылка на картинку объявления", example = "/image")
+    @Schema(description = "ссылка на картинку объявления", example = "string")
     String image;
-    @JsonProperty("Ad")
-    @Schema(description = "id объявления", example = "1")
+    @JsonProperty("pk")
+    @Schema(description = "id объявления", example = "0")
     Long pk;
     @JsonProperty("price")
-    @Schema(description = "цена объявления",example = "10000.0")
+    @Schema(description = "цена объявления",example = "0")
     Double price;
     @JsonProperty("title")
-    @Schema(description = "заголовок объявления", example = "Мультиварка")
+    @Schema(description = "заголовок объявления", example = "string")
     String title;
 
 }
