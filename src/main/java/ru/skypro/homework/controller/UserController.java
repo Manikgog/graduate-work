@@ -74,10 +74,7 @@ public class UserController {
                     description = "OK",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = UpdateUser.class),
-                            examples = @ExampleObject(
-                                    description = "Информация о пользователе обновлена"
-                            )
+                            schema = @Schema(implementation = UpdateUser.class)
                     )),
             @ApiResponse(responseCode = "401",
                     description = "Unauthorized",
@@ -85,7 +82,7 @@ public class UserController {
     })
     @PatchMapping("/me")
     public ResponseEntity<UpdateUser> updateUser(@RequestBody UpdateUser userPatch){
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new UpdateUser());
     }
 
     @Operation(summary = "Обновление аватара авторизованного пользователя" , responses = {
