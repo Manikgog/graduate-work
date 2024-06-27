@@ -15,7 +15,6 @@ import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
 import ru.skypro.homework.service.UserService;
-import ru.skypro.homework.service.impl.UserServiceImpl;
 
 @RequestMapping("/users")
 @RestController
@@ -24,7 +23,7 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserServiceImpl userService){
+    public UserController(UserService userService){
         this.userService = userService;
     }
 
@@ -55,6 +54,7 @@ public class UserController {
                     description = "Unauthorized",
             content = @Content())
     })
+
     @GetMapping("/me")
     public ResponseEntity<User> getUser(){
         User user = new User();
