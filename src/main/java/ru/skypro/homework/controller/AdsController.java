@@ -92,13 +92,13 @@ public class AdsController {
     @Operation(summary = "Получение объявлений авторизованного пользователя", tags = {"Объявления"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Comments.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Ads.class))),
 
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content())
     })
     @GetMapping("/me")
-    public ResponseEntity<Comments> getAdsAuthorizedUser() {
-        return ResponseEntity.ok().body(new Comments());
+    public ResponseEntity<Ads> getAdsAuthorizedUser() {
+        return ResponseEntity.ok().body(new Ads());
     }
 
     @Operation(summary = "Обновление картинки объявления", tags = {"Объявления"})
