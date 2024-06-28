@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Register {
     @Schema(minLength = 4, maxLength = 32, description = "логин")
-    private String userName;
+    private String username;
     @Schema(minLength = 8, maxLength = 16, description = "пароль")
     private String password;
     @Schema(minLength = 2, maxLength = 16, description = "имя пользователя")
