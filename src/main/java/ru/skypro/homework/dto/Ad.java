@@ -11,15 +11,19 @@ public class Ad {
     @JsonProperty("author")
     @Schema(description = "id автора объявления", example = "0")
     Long author;
+
     @JsonProperty("image")
     @Schema(description = "ссылка на картинку объявления", example = "string")
     String image;
+
     @JsonProperty("pk")
     @Schema(description = "id объявления", example = "0")
     Long pk;
+
     @JsonProperty("price")
     @Schema(description = "цена объявления",example = "0")
-    Double price;
+    Integer price;
+
     @JsonProperty("title")
     @Schema(description = "заголовок объявления", example = "string")
     String title;
