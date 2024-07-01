@@ -25,7 +25,7 @@ public class CommentEntity {
     @Column(name = "created_at")
     Long createdAt;
 
-    @Column(name = "text", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "text", nullable = false, columnDefinition = "VARCHAR(64)")
     String text;
 
 }
