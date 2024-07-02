@@ -9,15 +9,15 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Register {
     @Schema(minLength = 4, maxLength = 32, description = "логин")
-    private String username;
+    String username;
     @Schema(minLength = 8, maxLength = 16, description = "пароль")
-    private String password;
+    String password;
     @Schema(minLength = 2, maxLength = 16, description = "имя пользователя")
-    private String firstName;
+    String firstName;
     @Schema(minLength = 2, maxLength = 16, description = "фамилия пользователя")
-    private String lastName;
+    String lastName;
     @Schema(pattern = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}", description = "телефон пользователя")
-    private String phone;
+    String phone;
     @Schema(description = "роль пользователя")
-    private Role role;
+    Role role;
 }

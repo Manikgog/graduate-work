@@ -36,4 +36,5 @@ public class UserEntity {
 
     @Column(name = "password", nullable = false)
     Integer password;
+
 }

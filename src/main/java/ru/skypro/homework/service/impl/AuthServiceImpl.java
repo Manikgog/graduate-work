@@ -1,4 +1,5 @@
 package ru.skypro.homework.service.impl;
+/*
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,3 +46,4 @@ public class AuthServiceImpl implements AuthService {
     }
 
 }
+*/
