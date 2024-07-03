@@ -15,23 +15,23 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "email", columnDefinition = "VARCHAR(32)")
+    @Column(name = "email", nullable = false, columnDefinition = "VARCHAR(32)")
     String email;
 
-    @Column(name = "first_name", columnDefinition = "VARCHAR(16)")
+    @Column(name = "first_name", nullable = false, columnDefinition = "VARCHAR(16)")
     String firstName;
 
-    @Column(name = "last_name", columnDefinition = "VARCHAR(16)")
+    @Column(name = "last_name", nullable = false, columnDefinition = "VARCHAR(16)")
     String lastName;
 
-    @Column(name = "phone", columnDefinition = "VARCHAR(20)")
+    @Column(name = "phone", nullable = false, columnDefinition = "VARCHAR(20)")
     String phone;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", columnDefinition = "VARCHAR(5)")
+    @Column(name = "role", nullable = false, columnDefinition = "VARCHAR(5)")
     Role role;
 
-    @Column(name = "image", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "image", columnDefinition = "TEXT")
     String image;
 
     @Column(name = "password", nullable = false)
