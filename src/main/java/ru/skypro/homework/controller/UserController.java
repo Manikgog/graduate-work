@@ -2,7 +2,6 @@ package ru.skypro.homework.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPassword;
-import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
 import ru.skypro.homework.service.UserService;
@@ -57,15 +55,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<User> getUser(){
-        User user = new User();
-        user.setId(1);
-        user.setFirstName("FirstName");
-        user.setLastName("LastName");
-        user.setEmail("Email");
-        user.setPhone("Phone");
-        user.setImage("/image");
-        user.setRole(Role.USER);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userService.getUser());
     }
 
     @Operation(summary = "Обновление информации об авторизованном пользователе",

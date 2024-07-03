@@ -20,7 +20,7 @@ public class AdsServiceImpl implements AdsService{
 
     @Override
     public List<Ad> getAdAll() {
-        return List.of();
+        return null;
     }
 
     @Override
