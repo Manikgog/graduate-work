@@ -15,7 +15,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "email", nullable = false, columnDefinition = "VARCHAR(32)")
+    @Column(name = "email", nullable = false, columnDefinition = "VARCHAR(32)", unique = true)
     String email;
 
     @Column(name = "first_name", nullable = false, columnDefinition = "VARCHAR(16)")
