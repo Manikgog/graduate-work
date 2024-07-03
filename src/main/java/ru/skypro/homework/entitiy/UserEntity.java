@@ -35,5 +35,5 @@ public class UserEntity {
     String image;
 
     @Column(name = "password", nullable = false)
-    Integer password;
+    String password;
 }
