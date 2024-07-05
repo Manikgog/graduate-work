@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-comment_table" author="A.Dubograev">
+        <preConditions>
+            <and>
+                <not>
+                    <tableExists tableName="comment_table"/>
+                </not>
+                <tableExists tableName="user_table"/>
+                <tableExists tableName="ad_table"/>
+            </and>
+        </preConditions>
+        <createTable tableName="comment_table">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="author_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ad_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="comment_table"
+                                 baseColumnNames="author_id"
+                                 constraintName="FK COMMENT_TABLE AUTHOR_COMMENT_ID -> USER_TABLE ID"
+                                 referencedTableName="user_table"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="comment_table"
+                                 baseColumnNames="ad_id"
+                                 constraintName="FK COMMENT_TABLE AD_ID -> AD_TABLE ID"
+                                 referencedTableName="ad_table"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+
+</databaseChangeLog>

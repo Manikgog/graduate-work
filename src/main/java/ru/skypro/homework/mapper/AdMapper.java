@@ -2,11 +2,12 @@ package ru.skypro.homework.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import ru.skypro.homework.dto.Ad;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.entitiy.AdEntity;
 
-@Mapper(componentModel = "spring",uses = AdEntity.class)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AdMapper {
     @Mapping(target = "author", source = "author.id")
     @Mapping(target = "pk", source = "id")
