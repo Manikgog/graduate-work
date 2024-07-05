@@ -15,14 +15,14 @@ public class CommentEntity {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "author_id", nullable = false)
     UserEntity author;
 
     @ManyToOne
-    @JoinColumn(name = "ad_id")
+    @JoinColumn(name = "ad_id", nullable = false)
     AdEntity ad;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false, columnDefinition = "BIGINT")
     Long createdAt;
 
     @Column(name = "text", nullable = false, columnDefinition = "VARCHAR(64)")

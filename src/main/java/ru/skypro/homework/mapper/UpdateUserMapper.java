@@ -1,11 +1,10 @@
 package ru.skypro.homework.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.entitiy.UserEntity;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(componentModel = "spring")
 public interface UpdateUserMapper {
     UpdateUser toUpdateUser(UserEntity source);
 }

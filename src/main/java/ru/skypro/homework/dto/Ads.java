@@ -18,19 +18,9 @@ public class Ads {
     @JsonProperty("result")
     List<Ad> results;
 
-    public Ads count(Integer count) {
-        this.count = count;
-        return this;
-    }
-
-    public Ads results(List<Ad> results) {
-        this.results = results;
-        return this;
-    }
-
     public Ads addResultsItem(Ad resultsItem) {
         if (this.results == null) {
-            this.results = new ArrayList<Ad>();
+            this.results = new ArrayList<>();
         }
         this.results.add(resultsItem);
         return this;

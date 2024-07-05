@@ -6,7 +6,7 @@ import ru.skypro.homework.dto.Ad;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.entitiy.AdEntity;
 
-@Mapper(componentModel = "spring",uses = AdEntity.class)
+@Mapper(componentModel = "spring")
 public interface AdMapper {
     @Mapping(target = "author", source = "author.id")
     @Mapping(target = "pk", source = "id")

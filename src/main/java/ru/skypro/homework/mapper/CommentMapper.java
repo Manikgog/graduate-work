@@ -10,6 +10,8 @@ import ru.skypro.homework.entitiy.CommentEntity;
 public interface CommentMapper {
 
     @Mapping(target = "author", source = "author.id")
-    @Mapping(target = "pk",source = "ad.id")
+    @Mapping(target = "pk", source = "id")
+    @Mapping(target = "authorImage", source = "author.image")
+    @Mapping(target = "authorFirstName", source = "author.firstName")
     Comment CommentEntityToComment(CommentEntity commentEntity);
 }
