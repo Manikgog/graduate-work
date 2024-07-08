@@ -2,6 +2,7 @@ package ru.skypro.homework.utils;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.exceptions.ImageNotFoundException;
@@ -13,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+@Component
 public class FileManager {
     @Value("${path.to.userImages.folder}")
     private String userImagesFolder;
@@ -44,15 +46,17 @@ public class FileManager {
 
     /**
      * Метод для записи файла с изображением на диск, а пути к этому файлу в базу данных.
-     * @param adId - id объявления
+     * @param username - email пользователя, разместившего объявление
+     * @param adTitle - название объявления
      * @param image - файл с изображением
      * @return Path - объект пути к записанному файлу
      */
-    public Path uploadAdPhoto(Long adId, MultipartFile image) {
+    public Path uploadAdPhoto(String username, String adTitle, MultipartFile image) {
         try {
             String fileName = String.format(
-                    "%d.%s",
-                    adId,
+                    "%s_%s.%s",
+                    username,
+                    adTitle,
                     StringUtils.getFilenameExtension(image.getOriginalFilename())
             );
             byte[] data = image.getBytes();

@@ -1,9 +1,10 @@
 package ru.skypro.homework.exceptions;
 
-public class ImageNotFoundException extends RuntimeException {
+
+public class EntityNotFoundException extends RuntimeException {
     private final String message;
 
-    public ImageNotFoundException(String message) {
+    public EntityNotFoundException(String message) {
         this.message = message;
     }
     @Override

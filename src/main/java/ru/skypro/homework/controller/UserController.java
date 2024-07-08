@@ -38,8 +38,12 @@ public class UserController {
     })
     @PostMapping("/set_password")
     public ResponseEntity<?> setPassword(@RequestBody NewPassword newPassword){
+        userService.setNewPassword(newPassword);
         return ResponseEntity.ok().build();
     }
+
+
+
 
     @Operation(summary = "Получение информации об авторизованном пользователе" , responses = {
             @ApiResponse(responseCode = "200",
@@ -52,11 +56,14 @@ public class UserController {
                     description = "Unauthorized",
             content = @Content())
     })
-
     @GetMapping("/me")
     public ResponseEntity<User> getUser(){
         return ResponseEntity.ok(userService.getUser());
     }
+
+
+
+
 
     @Operation(summary = "Обновление информации об авторизованном пользователе",
             responses = {
@@ -72,8 +79,11 @@ public class UserController {
     })
     @PatchMapping("/me")
     public ResponseEntity<UpdateUser> updateUser(@RequestBody UpdateUser userPatch){
-        return ResponseEntity.ok(new UpdateUser());
+        return ResponseEntity.ok(userService.updateUser(userPatch));
     }
+
+
+
 
     @Operation(summary = "Обновление аватара авторизованного пользователя" , responses = {
             @ApiResponse(responseCode = "200",
@@ -85,6 +95,7 @@ public class UserController {
     })
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateImage(@RequestParam MultipartFile image) {
+        userService.updateImage(image);
         return ResponseEntity.ok().build();
     }
 

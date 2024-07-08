@@ -1,6 +1,7 @@
 package ru.skypro.homework.service;
 
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.config.MyUserDetails;
 import ru.skypro.homework.dto.*;
 
 public interface UserService {
@@ -15,4 +16,5 @@ public interface UserService {
     Register registerUser(Register register);
 
     void loginUser(Login login);
+    MyUserDetails getUserDetails();
 }

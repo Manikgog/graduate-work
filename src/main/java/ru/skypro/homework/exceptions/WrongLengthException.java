@@ -1,9 +1,9 @@
 package ru.skypro.homework.exceptions;
 
-public class ImageNotFoundException extends RuntimeException {
+public class WrongLengthException extends RuntimeException{
     private final String message;
 
-    public ImageNotFoundException(String message) {
+    public WrongLengthException(String message) {
         this.message = message;
     }
     @Override

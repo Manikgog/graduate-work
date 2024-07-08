@@ -1,4 +1,4 @@
-package ru.skypro.homework.entitiy;
+package ru.skypro.homework.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
