@@ -3,13 +3,14 @@ package ru.skypro.homework.service.impl;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.config.MyUserDetails;
 import ru.skypro.homework.constants.Constants;
-import ru.skypro.homework.dto.*;
+import ru.skypro.homework.dto.NewPassword;
+import ru.skypro.homework.dto.UpdateUser;
+import ru.skypro.homework.dto.User;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.exceptions.WrongPasswordException;
 import ru.skypro.homework.mapper.UpdateUserMapper;
@@ -18,6 +19,7 @@ import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.CheckService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
+
 import java.nio.file.Path;
 
 @Service
@@ -32,7 +34,11 @@ public class UserServiceImpl implements UserService {
     private final CheckService checkService;
     private final Constants constants;
 
-
+    /**
+     * Метод для установки нового пароля для входа
+     * @param newPassword - объект содержащий текущий и новый пароли
+     * @return boolean - результат смены пароля
+     */
     @Override
     public boolean setNewPassword(NewPassword newPassword) {
         MyUserDetails userDetails = getUserDetails();
@@ -47,12 +53,21 @@ public class UserServiceImpl implements UserService {
         throw new WrongPasswordException("Введён некорректный текущий пароль");
     }
 
+    /**
+     * Метод для получения текущего пользователя
+     * @return User - объект пользователя
+     */
     @Override
     public User getUser() {
         MyUserDetails userDetails = getUserDetails();
         return userMapper.toUser(userDetails.getUser());
     }
 
+    /**
+     * Метод для изменения полей (firstName, lastName, phone) в таблице пользователей в  базе данных
+     * @param userPatch - объект с новыми значениями полей
+     * @return UpdateUser - объект с обновленными полями
+     */
     @Override
     public UpdateUser updateUser(UpdateUser userPatch) {
         checkService.checkString(constants.MIN_LENGTH_FIRSTNAME, constants.MAX_LENGTH_FIRSTNAME, userPatch.getFirstName());
@@ -65,6 +80,12 @@ public class UserServiceImpl implements UserService {
         return updateUserMapper.toUpdateUser(userEntity);
     }
 
+
+    /**
+     * Метод для обновления фотографии пользователя
+     * @param photo - файл с фотографией пользователя
+     * @return User - объект пользователя
+     */
     @Override
     public User updateImage(MultipartFile photo) {
         MyUserDetails userDetails = getUserDetails();
@@ -75,20 +96,13 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUser(userEntity);
     }
 
-    @Override
-    public Register registerUser(Register userRegister) {
-        return null;
-    }
-
+    /**
+     * Метод для получения объекта MyUserDetails из контекста Spring Security
+     * @return MeUserDetails
+     */
     @Override
     public MyUserDetails getUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (MyUserDetails) authentication.getPrincipal();
-    }
-
-
-    @Override
-    public void loginUser(Login login) {
-
     }
 }

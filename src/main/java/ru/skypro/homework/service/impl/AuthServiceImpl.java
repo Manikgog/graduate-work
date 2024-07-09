@@ -27,19 +27,33 @@ public class AuthServiceImpl implements AuthService {
     private final Constants constants;
     private final CheckService checkService;
 
-
+    /**
+     * Метод для аутентификации пользователя
+     * @param userName - имя пользователя (email)
+     * @param password - пароль
+     * @return результат аутентификации
+     */
     @Override
     public boolean login(String userName, String password) {
         MyUserDetails userDetails = myUserDetailService.loadUserByUsername(userName);
         return encoder.matches(password, userDetails.getPassword());
     }
 
-
+    /**
+     * Метод для аутентификации пользователя
+     * @param login - объект, содержащий имя и пароль пользователя
+     * @return результат аутентификации
+     */
     public boolean login(Login login) {
         MyUserDetails userDetails = myUserDetailService.loadUserByUsername(login.getUsername());
         return encoder.matches(login.getPassword(), userDetails.getPassword());
     }
 
+    /**
+     * Метод для регистрации пользователя
+     * @param register - объект, содержащий поля, необходимые для регистрации пользователя
+     * @return результат регистрации
+     */
     @Override
     public boolean register(Register register) {
         Optional<UserEntity> userEntity = userRepo.findByEmail(register.getUsername());

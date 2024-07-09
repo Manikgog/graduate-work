@@ -15,8 +15,6 @@ import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.service.AdsService;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/ads")
@@ -65,7 +63,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content())})
     @GetMapping("/{id}")
     public ResponseEntity<ExtendedAd> getAdsExtended(@PathVariable("id") int id) {
-        return ResponseEntity.ok().body(new ExtendedAd());
+        return ResponseEntity.ok().body(adsService.getAd(id));
     }
 
 
@@ -81,7 +79,8 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not found")})
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAds(@PathVariable("id") int id) {
+    public ResponseEntity<Void> deleteAds(@PathVariable int id) {
+        adsService.deleteAd(id);
         return ResponseEntity.ok().build();
     }
 
@@ -101,7 +100,7 @@ public class AdsController {
     })
     @PatchMapping("/{id}")
     public ResponseEntity<Ad> updateAds(@PathVariable("id") int id, @RequestBody CreateOrUpdateAd createOrUpdateAd) {
-        return ResponseEntity.ok().body(new Ad());
+        return ResponseEntity.ok().body(adsService.updateAds(id, createOrUpdateAd));
     }
 
 
@@ -116,7 +115,7 @@ public class AdsController {
     })
     @GetMapping("/me")
     public ResponseEntity<Ads> getAdsAuthorizedUser() {
-        return ResponseEntity.ok().body(new Ads());
+        return ResponseEntity.ok().body(adsService.getAdsAuthorizedUser());
     }
 
 
@@ -135,8 +134,8 @@ public class AdsController {
     })
 
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<String>> updateImage(@PathVariable int id,
+    public ResponseEntity<String[]> updateImage(@PathVariable int id,
                                                     @RequestPart(value = "image") MultipartFile image) {
-        return ResponseEntity.ok().body(new ArrayList<>());
+        return ResponseEntity.ok().body(adsService.updateImage(id, image));
     }
 }

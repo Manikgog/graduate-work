@@ -13,8 +13,5 @@ public interface UserService {
 
     User updateImage(MultipartFile animalPhoto);
 
-    Register registerUser(Register register);
-
-    void loginUser(Login login);
     MyUserDetails getUserDetails();
 }
