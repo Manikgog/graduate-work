@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.config.MyUserDetails;
-import ru.skypro.homework.dto.Ad;
-import ru.skypro.homework.dto.Comments;
-import ru.skypro.homework.dto.CreateOrUpdateAd;
-import ru.skypro.homework.dto.ExtendedAd;
+import ru.skypro.homework.constants.Constants;
+import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepo;
@@ -27,24 +25,19 @@ public class AdsServiceImpl implements AdsService{
     private final UserService userService;
     private final FileManager fileManager;
     private final CheckService checkService;
-    private final int MIN_LENGTH_TITLE_AD = 4;
-    private final int MAX_LENGTH_TITLE_AD = 32;
-    private final int MIN_LENGTH_DESCRIPTION_AD = 8;
-    private final int MAX_LENGTH_DESCRIPTION_AD = 64;
-    private final int MIN_PRICE = 0;
-    private final int MAX_PRICE = 10_000_000;
+    private final Constants constants;
 
     /**
      * Метод для добавления объявления в базу данных
      * @param createOrUpdateAd - объект с полями для создания нового объевления
-     * @param image
-     * @return
+     * @param image - файл с изображением
+     * @return Ad
      */
     @Override
     public Ad createAd(CreateOrUpdateAd createOrUpdateAd, MultipartFile image) {
-        checkService.checkString(MIN_LENGTH_TITLE_AD, MAX_LENGTH_TITLE_AD, createOrUpdateAd.getTitle());
-        checkService.checkString(MIN_LENGTH_DESCRIPTION_AD, MAX_LENGTH_DESCRIPTION_AD, createOrUpdateAd.getDescription());
-        checkService.checkNumber(MIN_PRICE, MAX_PRICE, createOrUpdateAd.getPrice());
+        checkService.checkString(constants.MIN_LENGTH_TITLE_AD, constants.MAX_LENGTH_TITLE_AD, createOrUpdateAd.getTitle());
+        checkService.checkString(constants.MIN_LENGTH_DESCRIPTION_AD, constants.MAX_LENGTH_DESCRIPTION_AD, createOrUpdateAd.getDescription());
+        checkService.checkNumber(constants.MIN_PRICE, constants.MAX_PRICE, createOrUpdateAd.getPrice());
 
         MyUserDetails userDetails = userService.getUserDetails();
         AdEntity newAd = new AdEntity();
@@ -63,8 +56,13 @@ public class AdsServiceImpl implements AdsService{
     }
 
     @Override
-    public List<Ad> getAdAll() {
-        return null;
+    public Ads getAdAll() {
+        MyUserDetails userDetails = userService.getUserDetails();
+        List<Ad> adList = adRepo.findByAuthor(userDetails.getUser()).stream().map(adMapper::adEntityToAd).toList();;
+        Ads ads = new Ads();
+        ads.setCount(adList.size());
+        ads.setResults(adList);
+        return ads;
     }
 
     @Override

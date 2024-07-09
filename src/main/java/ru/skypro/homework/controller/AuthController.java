@@ -40,7 +40,7 @@ public class AuthController {
 
     @Operation(summary = "Регистрация пользователя" , responses = {
             @ApiResponse(responseCode = "201", description = "Created", content = @Content()),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content())
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content())
     })
     @Tag(name = "Регистрация")
     @PostMapping("/register")

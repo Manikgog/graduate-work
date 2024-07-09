@@ -29,5 +29,15 @@ public class ResaleExceptionHandler {
     public ResponseEntity<String> handleWrongNumberException(WrongNumberException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+
+    @ExceptionHandler(WrongRoleException.class)
+    public ResponseEntity<String> handleWrongRoleException(WrongRoleException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(WrongPasswordException.class)
+    public ResponseEntity<String> handleWrongPasswordException(WrongPasswordException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }
 

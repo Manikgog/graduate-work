@@ -3,19 +3,21 @@ package ru.skypro.homework.service.impl;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.config.MyUserDetails;
+import ru.skypro.homework.constants.Constants;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.UserEntity;
+import ru.skypro.homework.exceptions.WrongPasswordException;
 import ru.skypro.homework.mapper.UpdateUserMapper;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.CheckService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
-
 import java.nio.file.Path;
 
 @Service
@@ -28,15 +30,13 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder encoder;
     private final FileManager fileManager;
     private final CheckService checkService;
-    private final int MIN_PASSWORD_LENGTH = 8;
-    private final int MAX_PASSWORD_LENGTH = 16;
+    private final Constants constants;
 
 
     @Override
     public boolean setNewPassword(NewPassword newPassword) {
-        checkService.checkString(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH, newPassword.getCurrentPassword());
-        checkService.checkString(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH, newPassword.getNewPassword());
         MyUserDetails userDetails = getUserDetails();
+        checkService.checkString(constants.MIN_LENGTH_PASSWORD, constants.MAX_LENGTH_PASSWORD, newPassword.getNewPassword());
         UserEntity userEntity = userDetails.getUser();
 
         if(encoder.matches(newPassword.getCurrentPassword(), userEntity.getPassword())) {
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
             userRepo.save(userEntity);
             return true;
         }
-        return false;
+        throw new WrongPasswordException("Введён некорректный текущий пароль");
     }
 
     @Override
@@ -55,6 +55,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UpdateUser updateUser(UpdateUser userPatch) {
+        checkService.checkString(constants.MIN_LENGTH_FIRSTNAME, constants.MAX_LENGTH_FIRSTNAME, userPatch.getFirstName());
+        checkService.checkString(constants.MIN_LENGTH_LASTNAME, constants.MAX_LENGTH_LASTNAME, userPatch.getLastName());
+        checkService.checkPhone(constants.PHONE_PATTERN, userPatch.getPhone());
         MyUserDetails userDetails = getUserDetails();
         UserEntity userEntity = userDetails.getUser();
         updateUserMapper.toUserEntity(userPatch, userEntity);
@@ -67,7 +70,7 @@ public class UserServiceImpl implements UserService {
         MyUserDetails userDetails = getUserDetails();
         Path path = fileManager.uploadUserPhoto(userDetails.getUsername(), photo);
         UserEntity userEntity = userDetails.getUser();
-        userEntity.setImage(path.toString());
+        userEntity.setImage("\\" + path.toString());
         userRepo.save(userEntity);
         return userMapper.toUser(userEntity);
     }

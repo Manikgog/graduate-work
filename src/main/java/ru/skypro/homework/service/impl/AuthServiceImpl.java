@@ -1,41 +1,39 @@
 package ru.skypro.homework.service.impl;
 
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.config.MyUserDetails;
 import ru.skypro.homework.config.MyUserDetailsService;
+import ru.skypro.homework.constants.Constants;
 import ru.skypro.homework.dto.Login;
 import ru.skypro.homework.dto.Register;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.RegisterMapper;
 import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.AuthService;
+import ru.skypro.homework.service.CheckService;
 
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final MyUserDetailsService myUserDetailService;
     private final PasswordEncoder encoder;
     private final RegisterMapper registerMapper;
     private final UserRepo userRepo;
-    private final int MIN_LENGTH_USERNAME = 4;
-    private final int MAX_LENGTH_USERNAME = 32;
+    private final Constants constants;
+    private final CheckService checkService;
 
-
-    public AuthServiceImpl(MyUserDetailsService myUserDetailService, PasswordEncoder encoder, RegisterMapper registerMapper, UserRepo userRepo) {
-        this.myUserDetailService = myUserDetailService;
-        this.encoder = encoder;
-        this.registerMapper = registerMapper;
-        this.userRepo = userRepo;
-    }
 
     @Override
     public boolean login(String userName, String password) {
         MyUserDetails userDetails = myUserDetailService.loadUserByUsername(userName);
         return encoder.matches(password, userDetails.getPassword());
     }
+
 
     public boolean login(Login login) {
         MyUserDetails userDetails = myUserDetailService.loadUserByUsername(login.getUsername());
@@ -48,7 +46,12 @@ public class AuthServiceImpl implements AuthService {
         if (userEntity.isPresent()) {
             return false;
         }
-
+        checkService.checkString(constants.MIN_LENGTH_USERNAME, constants.MAX_LENGTH_USERNAME, register.getUsername());
+        checkService.checkString(constants.MIN_LENGTH_PASSWORD, constants.MAX_LENGTH_PASSWORD, register.getPassword());
+        checkService.checkString(constants.MIN_LENGTH_FIRSTNAME, constants.MAX_LENGTH_FIRSTNAME, register.getFirstName());
+        checkService.checkString(constants.MIN_LENGTH_LASTNAME, constants.MAX_LENGTH_LASTNAME, register.getLastName());
+        checkService.checkPhone(constants.PHONE_PATTERN, register.getPhone());
+        checkService.checkRole(register.getRole());
         UserEntity newUserEntity = registerMapper.toUserEntity(register);
         newUserEntity.setPassword(encoder.encode(register.getPassword()));
         userRepo.save(newUserEntity);

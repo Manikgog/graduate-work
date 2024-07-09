@@ -15,6 +15,7 @@ import ru.skypro.homework.dto.CreateOrUpdateComment;
 @RestController
 @RequestMapping("/ads")
 @Tag(name = "Комментарии")
+@CrossOrigin("http://localhost:3000")
 public class CommentController {
 
     @Operation(summary = "Получение комментариев объявления" , responses = {

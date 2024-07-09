@@ -20,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ads")
+@CrossOrigin("http://localhost:3000")
 public class AdsController {
     private final AdsService adsService;
 
@@ -33,7 +34,7 @@ public class AdsController {
             @Content(mediaType = "application/json", schema = @Schema(implementation = Ads.class)))})
     @GetMapping
     public ResponseEntity<Ads> getAds() {
-        return ResponseEntity.ok().body(new Ads());
+        return ResponseEntity.ok().body(adsService.getAdAll());
     }
 
 

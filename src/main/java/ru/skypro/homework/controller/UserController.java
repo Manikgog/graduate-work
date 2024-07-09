@@ -16,6 +16,7 @@ import ru.skypro.homework.service.UserService;
 
 @RequestMapping("/users")
 @RestController
+@CrossOrigin("http://localhost:3000")
 @Tag(name = "Пользователи")
 public class UserController {
 

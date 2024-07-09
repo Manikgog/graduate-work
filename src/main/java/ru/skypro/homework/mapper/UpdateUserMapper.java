@@ -11,4 +11,3 @@ public interface UpdateUserMapper {
 
     void toUserEntity(UpdateUser source, @MappingTarget UserEntity target);
 }
-
