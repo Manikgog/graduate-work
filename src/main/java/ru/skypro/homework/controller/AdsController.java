@@ -8,13 +8,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.config.MyUserDetails;
 import ru.skypro.homework.dto.Ad;
 import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.service.AdsService;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ads")
@@ -26,7 +32,7 @@ public class AdsController {
         this.adsService = adsService;
     }
 
-    @Operation(summary = "Получение всех объявлений", description = "", tags = {"Объявления"})
+    @Operation(summary = "Получение всех объявлений", tags = {"Объявления"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content =
             @Content(mediaType = "application/json", schema = @Schema(implementation = Ads.class)))})
@@ -45,8 +51,9 @@ public class AdsController {
 
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content())})
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Ad> createAd(@RequestPart(value="properties") CreateOrUpdateAd properties
-            ,@RequestPart(value="image") MultipartFile image) {
+    public ResponseEntity<Ad> createAd(@RequestPart(value="properties") @RequestBody CreateOrUpdateAd properties,
+                                       @RequestPart(value="image") @RequestParam MultipartFile image) {
+        System.out.println(LocalDateTime.now());
         return ResponseEntity.ok().body(adsService.createAd(properties, image));
     }
 
@@ -78,8 +85,16 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Forbidden"),
 
             @ApiResponse(responseCode = "404", description = "Not found")})
+    @PreAuthorize("@checkAccess.isAdminOrOwnerAd(#id, authentication)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAds(@PathVariable int id) {
+        System.out.println(LocalDateTime.now());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        System.out.println(userDetails.getUsername());
+        System.out.println(userDetails.getUser().getFirstName());
+        System.out.println(userDetails.getUser().getLastName());
+        System.out.println(userDetails.getUser().getRole());
         adsService.deleteAd(id);
         return ResponseEntity.ok().build();
     }
@@ -98,6 +113,7 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
     })
+    @PreAuthorize("@checkAccess.isAdminOrOwnerAd(#id, authentication)")
     @PatchMapping("/{id}")
     public ResponseEntity<Ad> updateAds(@PathVariable("id") int id, @RequestBody CreateOrUpdateAd createOrUpdateAd) {
         return ResponseEntity.ok().body(adsService.updateAds(id, createOrUpdateAd));
@@ -132,9 +148,9 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content())
     })
-
+    @PreAuthorize("@checkAccess.isAdminOrOwnerAd(#id, authentication)")
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String[]> updateImage(@PathVariable int id,
+    public ResponseEntity<List<String>> updateImage(@PathVariable int id,
                                                     @RequestPart(value = "image") MultipartFile image) {
         return ResponseEntity.ok().body(adsService.updateImage(id, image));
     }

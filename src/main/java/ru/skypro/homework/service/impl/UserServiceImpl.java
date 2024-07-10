@@ -16,7 +16,7 @@ import ru.skypro.homework.exceptions.WrongPasswordException;
 import ru.skypro.homework.mapper.UpdateUserMapper;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepo;
-import ru.skypro.homework.service.CheckService;
+import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
 

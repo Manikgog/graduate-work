@@ -12,7 +12,7 @@ import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.RegisterMapper;
 import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.AuthService;
-import ru.skypro.homework.service.CheckService;
+import ru.skypro.homework.check.CheckService;
 
 import java.util.Optional;
 

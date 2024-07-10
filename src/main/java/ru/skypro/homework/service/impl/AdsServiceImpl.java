@@ -1,7 +1,6 @@
 package ru.skypro.homework.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.config.MyUserDetails;
@@ -18,9 +17,10 @@ import ru.skypro.homework.mapper.AdToAdEntity;
 import ru.skypro.homework.repository.AdRepo;
 import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.AdsService;
-import ru.skypro.homework.service.CheckService;
+import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +73,7 @@ public class AdsServiceImpl implements AdsService{
      */
     @Override
     public Ads getAdAll() {
-        List<Ad> adList = adRepo.findAll().stream().map(adMapper::adEntityToAd).toList();;
+        List<Ad> adList = adRepo.findAll().stream().map(adMapper::adEntityToAd).toList();
         Ads ads = new Ads();
         ads.setCount(adList.size());
         ads.setResults(adList);
@@ -111,13 +111,12 @@ public class AdsServiceImpl implements AdsService{
      * @param id - идентификатор
      */
     @Override
-    @PostAuthorize("hasRole('ADMIN') || userService.getUserDetails().getUser().getEmail() == autentication.name")
     public void deleteAd(int id) {
         adRepo.deleteById((long)id);
     }
 
     @Override
-    public String[] updateImage(int id, MultipartFile image) {
+    public List<String> updateImage(int id, MultipartFile image) {
         AdEntity adEntity = adRepo.findById((long)id).orElseThrow(() -> new EntityNotFoundException("Объявление id=" + id + " не найдено"));
         MyUserDetails userDetails = userService.getUserDetails();
         Path path = fileManager.uploadAdPhoto(userDetails.getUser().getEmail(), adEntity.getTitle(), image);
@@ -125,7 +124,7 @@ public class AdsServiceImpl implements AdsService{
         AdEntity adFromDB = adRepo.save(adEntity);
         List<String> images = new ArrayList<>();
         images.add(path.toString());
-        return images.toArray(new String[images.size()]);
+        return images;
     }
 
     @Override

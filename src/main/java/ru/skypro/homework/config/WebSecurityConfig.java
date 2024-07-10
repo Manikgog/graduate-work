@@ -47,7 +47,6 @@ public class WebSecurityConfig {
                                         .permitAll()
                                         .requestMatchers("/ads/**", "/users/**")
                                         .authenticated())
-                /*.formLogin(AbstractAuthenticationFilterConfigurer::permitAll)*/
                 .httpBasic(withDefaults());
         return http.build();
     }

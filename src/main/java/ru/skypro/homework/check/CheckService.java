@@ -1,12 +1,10 @@
-package ru.skypro.homework.service;
+package ru.skypro.homework.check;
 
 import org.springframework.stereotype.Component;
 import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.exceptions.WrongLengthException;
 import ru.skypro.homework.exceptions.WrongNumberException;
-import ru.skypro.homework.exceptions.WrongPasswordException;
 import ru.skypro.homework.exceptions.WrongRoleException;
-import ru.skypro.homework.repository.UserRepo;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
