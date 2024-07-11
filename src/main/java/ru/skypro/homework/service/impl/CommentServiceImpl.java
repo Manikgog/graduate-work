@@ -2,7 +2,7 @@ package ru.skypro.homework.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.config.MyUserDetails;
 import ru.skypro.homework.dto.Comment;
@@ -10,21 +10,17 @@ import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
 import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.CommentEntity;
-import ru.skypro.homework.exceptions.CommentNotFoundException;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.repository.AdRepo;
 import ru.skypro.homework.repository.CommentRepo;
 import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.service.UserService;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.Instant;
 import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepo commentRepo;
