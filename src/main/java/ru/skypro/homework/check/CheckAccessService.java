@@ -38,8 +38,8 @@ public class CheckAccessService {
                     return new EntityNotFoundException("Comment " + commentId + " not found");
                 });
         return userEntity.getRole().name().equals("ADMIN")
-                || adEntity.equals(commentEntity.getAd())
-                || userEntity.getId().equals(commentEntity.getAuthor().getId());
+                || (adEntity.equals(commentEntity.getAd())
+                && userEntity.getId().equals(commentEntity.getAuthor().getId()));
 
     }
 
