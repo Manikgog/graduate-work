@@ -31,6 +31,7 @@ public class AuthController {
     @Tag(name = "Авторизация")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Login login) {
+        log.info("The login method of AuthController is called");
         if (authService.login(login.getUsername(), login.getPassword())) {
             return ResponseEntity.ok().build();
         } else {
@@ -45,6 +46,7 @@ public class AuthController {
     @Tag(name = "Регистрация")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Register register) {
+        log.info("The register method of AuthController is called");
         if (authService.register(register)) {
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {

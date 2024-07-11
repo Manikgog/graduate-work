@@ -1,6 +1,7 @@
 package ru.skypro.homework.service.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.config.MyUserDetails;
@@ -13,9 +14,9 @@ import ru.skypro.homework.mapper.RegisterMapper;
 import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.AuthService;
 import ru.skypro.homework.check.CheckService;
-
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -35,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public boolean login(String userName, String password) {
+        log.info("The login method of AuthServiceImpl is called");
         MyUserDetails userDetails = myUserDetailService.loadUserByUsername(userName);
         return encoder.matches(password, userDetails.getPassword());
     }
@@ -45,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
      * @return результат аутентификации
      */
     public boolean login(Login login) {
+        log.info("The login method of AuthServiceImpl is called");
         MyUserDetails userDetails = myUserDetailService.loadUserByUsername(login.getUsername());
         return encoder.matches(login.getPassword(), userDetails.getPassword());
     }
@@ -56,6 +59,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public boolean register(Register register) {
+        log.info("The register method of AuthServiceImpl is called");
         Optional<UserEntity> userEntity = userRepo.findByEmail(register.getUsername());
         if (userEntity.isPresent()) {
             return false;

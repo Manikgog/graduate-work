@@ -29,15 +29,6 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-       /*http.authorizeHttpRequests(
-                        authorization ->
-                                authorization
-                                        .requestMatchers(AUTH_WHITELIST)
-                                        .permitAll()
-                                        .requestMatchers("/ads/**", "/users/**")
-                                        .authenticated()
-                )
-                        .httpBasic(withDefaults());*/
         http.csrf()
                 .disable()
                 .authorizeHttpRequests(

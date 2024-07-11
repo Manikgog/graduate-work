@@ -13,16 +13,22 @@ import ru.skypro.homework.repository.UserRepo;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CheckAccess {
+public class CheckAccessService {
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
     private final AdRepo adRepo;
     public boolean isAdminOrOwnerComment(Long commentId, Authentication authentication) {
         log.info("Was invoked method for verify of access");
         UserEntity userEntity = userRepo.findByEmail(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("User " + authentication.getName() + " not found"));
+                .orElseThrow(() -> {
+                    log.error("An EntityNotFoundException " + "(User " + authentication.getName() + " not found)" + "exception was thrown when calling the isAdminOrOwnerComment method of CheckAccessService");
+                    return new EntityNotFoundException("User " + authentication.getName() + " not found");
+                });
         CommentEntity commentEntity = commentRepo.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("Comment " + commentId + " not found"));
+                .orElseThrow(() -> {
+                    log.error("An EntityNotFoundException " + "(Comment " + commentId + " not found)" + "exception was thrown when calling the isAdminOrOwnerComment method of CheckAccessService");
+                    return new EntityNotFoundException("Comment " + commentId + " not found");
+                });
         return userEntity.getRole().name().equals("ADMIN")
                 || userEntity.getId().equals(commentEntity.getAuthor().getId());
 
@@ -31,9 +37,15 @@ public class CheckAccess {
     public boolean isAdminOrOwnerAd(Long adId, Authentication authentication) {
         log.info("Was invoked method for verify of access");
         UserEntity userEntity = userRepo.findByEmail(authentication.getName())
-                .orElseThrow(() -> new EntityNotFoundException("User " + authentication.getName() + " not found"));
+                .orElseThrow(() -> {
+                    log.error("An EntityNotFoundException " + "(User " + authentication.getName() + " not found)" + "exception was thrown when calling the isAdminOrOwnerAd method of CheckAccessService");
+                    return new EntityNotFoundException("User " + authentication.getName() + " not found");
+                });
         AdEntity adEntity = adRepo.findById(adId)
-                .orElseThrow(() -> new EntityNotFoundException("Ad " + adId + " not found"));
+                .orElseThrow(() -> {
+                    log.error("An EntityNotFoundException " + "(Comment " + adId + " not found)" + "exception was thrown when calling the isAdminOrOwnerComment method of CheckAccessService");
+                    return new EntityNotFoundException("Ad " + adId + " not found");
+                });
         return userEntity.getRole().name().equals("ADMIN")
                 || userEntity.getId().equals(adEntity.getAuthor().getId());
     }

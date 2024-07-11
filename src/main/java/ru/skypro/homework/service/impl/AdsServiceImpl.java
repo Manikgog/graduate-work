@@ -1,8 +1,10 @@
 package ru.skypro.homework.service.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.config.MyUserDetails;
 import ru.skypro.homework.constants.Constants;
 import ru.skypro.homework.dto.Ad;
@@ -15,9 +17,7 @@ import ru.skypro.homework.mapper.AdEntityToExtendedAdMapper;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.mapper.AdToAdEntity;
 import ru.skypro.homework.repository.AdRepo;
-import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.AdsService;
-import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
 
@@ -25,12 +25,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AdsServiceImpl implements AdsService{
     private final AdMapper adMapper;
     private final AdRepo adRepo;
-    private final UserRepo userRepo;
     private final UserService userService;
     private final FileManager fileManager;
     private final CheckService checkService;
@@ -46,6 +46,7 @@ public class AdsServiceImpl implements AdsService{
      */
     @Override
     public Ad createAd(CreateOrUpdateAd createOrUpdateAd, MultipartFile image) {
+        log.info("The createAd method of AdsServiceImpl is called");
         checkService.checkString(constants.MIN_LENGTH_TITLE_AD, constants.MAX_LENGTH_TITLE_AD, createOrUpdateAd.getTitle());
         checkService.checkString(constants.MIN_LENGTH_DESCRIPTION_AD, constants.MAX_LENGTH_DESCRIPTION_AD, createOrUpdateAd.getDescription());
         checkService.checkNumber(constants.MIN_PRICE, constants.MAX_PRICE, createOrUpdateAd.getPrice());
@@ -73,6 +74,7 @@ public class AdsServiceImpl implements AdsService{
      */
     @Override
     public Ads getAdAll() {
+        log.info("The getAdAll method of AdsServiceImpl is called");
         List<Ad> adList = adRepo.findAll().stream().map(adMapper::adEntityToAd).toList();
         Ads ads = new Ads();
         ads.setCount(adList.size());
@@ -88,7 +90,11 @@ public class AdsServiceImpl implements AdsService{
      */
     @Override
     public Ad updateAd(Ad ad) {
-        AdEntity adEntity = adRepo.findById(ad.getPk()).orElseThrow(() -> new EntityNotFoundException("Объявление id=" + ad.getPk() + " не найдено"));
+        log.info("The updateAd method of AdsServiceImpl is called");
+        AdEntity adEntity = adRepo.findById(ad.getPk()).orElseThrow(() -> {
+            log.error("An EntityNotFoundException " + "(Ad c id=" + ad.getPk() + " not found)" + "exception was thrown when calling the updateAd method of AdsServiceImpl");
+            return new EntityNotFoundException("Объявление id=" + ad.getPk() + " не найдено");
+        });
         adToAdEntity.perform(ad, adEntity, userService.getUserDetails().getUser());
         return adMapper.adEntityToAd(adRepo.save(adEntity));
     }
@@ -101,7 +107,11 @@ public class AdsServiceImpl implements AdsService{
      */
     @Override
     public ExtendedAd getAd(int id) {
-        AdEntity adEntity = adRepo.findById((long)id).orElseThrow(() -> new EntityNotFoundException("Объявление id=" + id + " не найдено"));
+        log.info("The getAd method of AdsServiceImpl is called");
+        AdEntity adEntity = adRepo.findById((long)id).orElseThrow(() -> {
+            log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the getAd method of AdsServiceImpl");
+            return new EntityNotFoundException("Объявление id=" + id + " не найдено");
+        });
         return adEntityToExtendedAdMapper.perform(adEntity);
     }
 
@@ -112,12 +122,17 @@ public class AdsServiceImpl implements AdsService{
      */
     @Override
     public void deleteAd(int id) {
+        log.info("The deleteAd method of AdsServiceImpl is called");
         adRepo.deleteById((long)id);
     }
 
     @Override
     public List<String> updateImage(int id, MultipartFile image) {
-        AdEntity adEntity = adRepo.findById((long)id).orElseThrow(() -> new EntityNotFoundException("Объявление id=" + id + " не найдено"));
+        log.info("The updateImage method of AdsServiceImpl is called");
+        AdEntity adEntity = adRepo.findById((long)id).orElseThrow(() -> {
+            log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the updateImage method of AdsServiceImpl");
+            return new EntityNotFoundException("Объявление id=" + id + " не найдено");
+        });
         MyUserDetails userDetails = userService.getUserDetails();
         Path path = fileManager.uploadAdPhoto(userDetails.getUser().getEmail(), adEntity.getTitle(), image);
         adEntity.setImage(path.toString());
@@ -129,6 +144,7 @@ public class AdsServiceImpl implements AdsService{
 
     @Override
     public Ads getAdsAuthorizedUser() {
+        log.info("The getAdsAuthorizedUser method of AdsServiceImpl is called");
         MyUserDetails userDetails = userService.getUserDetails();
         List<Ad> adList = adRepo.findByAuthor(userDetails.getUser()).stream().map(adMapper::adEntityToAd).toList();
         Ads ads = new Ads();
@@ -139,7 +155,11 @@ public class AdsServiceImpl implements AdsService{
 
     @Override
     public Ad updateAds(int id, CreateOrUpdateAd createOrUpdateAd) {
-        AdEntity adEntity = adRepo.findById((long)id).orElseThrow(() -> new EntityNotFoundException("Объявление с id=" + id + " не найдено"));
+        log.info("The updateAds method of AdsServiceImpl is called");
+        AdEntity adEntity = adRepo.findById((long)id).orElseThrow(() -> {
+            log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the updateAds method of AdsServiceImpl");
+            return new EntityNotFoundException("Объявление с id=" + id + " не найдено");
+        });
         adMapper.CreateOrUpdateAdToAdEntity(createOrUpdateAd, adEntity);
         return adMapper.adEntityToAd(adRepo.save(adEntity));
     }

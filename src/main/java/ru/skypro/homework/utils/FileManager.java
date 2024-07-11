@@ -1,6 +1,7 @@
 package ru.skypro.homework.utils;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+@Slf4j
 @Component
 public class FileManager {
     @Value("${path.to.userImages.folder}")
@@ -29,6 +31,7 @@ public class FileManager {
      * @return Path - объект пути к записанному файлу
      */
     public Path uploadUserPhoto(String username, MultipartFile image) {
+        log.info("The uploadUserPhoto method of FileManager is called");
         try {
             String fileName = String.format(
                     "%s.%s",
@@ -52,6 +55,7 @@ public class FileManager {
      * @return Path - объект пути к записанному файлу
      */
     public Path uploadAdPhoto(String username, String adTitle, MultipartFile image) {
+        log.info("The uploadAdPhoto method of FileManager is called");
         try {
             String fileName = String.format(
                     "%s_%s.%s",
@@ -74,6 +78,7 @@ public class FileManager {
      * @param response - ответ для записи содержимого файла
      */
     public void getImage(Path path, HttpServletResponse response) {
+        log.info("The getImage method of FileManager is called");
         if(!Files.exists(path)){
             throw new ImageNotFoundException("Файл с изображением не найден!");
         }

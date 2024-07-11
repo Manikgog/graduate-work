@@ -1,6 +1,7 @@
 package ru.skypro.homework.service.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,9 +20,9 @@ import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
-
 import java.nio.file.Path;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -41,6 +42,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public boolean setNewPassword(NewPassword newPassword) {
+        log.info("The setNewPassword method of setNewPassword is called");
         MyUserDetails userDetails = getUserDetails();
         checkService.checkString(constants.MIN_LENGTH_PASSWORD, constants.MAX_LENGTH_PASSWORD, newPassword.getNewPassword());
         UserEntity userEntity = userDetails.getUser();
@@ -59,6 +61,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User getUser() {
+        log.info("The getUser method of setNewPassword is called");
         MyUserDetails userDetails = getUserDetails();
         return userMapper.toUser(userDetails.getUser());
     }
@@ -70,6 +73,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UpdateUser updateUser(UpdateUser userPatch) {
+        log.info("The updateUser method of setNewPassword is called");
         checkService.checkString(constants.MIN_LENGTH_FIRSTNAME, constants.MAX_LENGTH_FIRSTNAME, userPatch.getFirstName());
         checkService.checkString(constants.MIN_LENGTH_LASTNAME, constants.MAX_LENGTH_LASTNAME, userPatch.getLastName());
         checkService.checkPhone(constants.PHONE_PATTERN, userPatch.getPhone());
@@ -88,6 +92,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User updateImage(MultipartFile photo) {
+        log.info("The updateImage method of setNewPassword is called");
         MyUserDetails userDetails = getUserDetails();
         Path path = fileManager.uploadUserPhoto(userDetails.getUsername(), photo);
         UserEntity userEntity = userDetails.getUser();
@@ -102,6 +107,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public MyUserDetails getUserDetails() {
+        log.info("The getUserDetails method of setNewPassword is called");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (MyUserDetails) authentication.getPrincipal();
     }
