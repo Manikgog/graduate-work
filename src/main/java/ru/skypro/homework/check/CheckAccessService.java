@@ -21,12 +21,12 @@ public class CheckAccessService {
         log.info("Was invoked method for verify of access");
         UserEntity userEntity = userRepo.findByEmail(authentication.getName())
                 .orElseThrow(() -> {
-                    log.error("An EntityNotFoundException " + "(User " + authentication.getName() + " not found)" + "exception was thrown when calling the isAdminOrOwnerComment method of CheckAccessService");
+                    log.error("An EntityNotFoundException " + "(User " + authentication.getName() + " not found)" + " exception was thrown when calling the isAdminOrOwnerComment method of CheckAccessService");
                     return new EntityNotFoundException("User " + authentication.getName() + " not found");
                 });
         CommentEntity commentEntity = commentRepo.findById(commentId)
                 .orElseThrow(() -> {
-                    log.error("An EntityNotFoundException " + "(Comment " + commentId + " not found)" + "exception was thrown when calling the isAdminOrOwnerComment method of CheckAccessService");
+                    log.error("An EntityNotFoundException " + "(Comment " + commentId + " not found)" + " exception was thrown when calling the isAdminOrOwnerComment method of CheckAccessService");
                     return new EntityNotFoundException("Comment " + commentId + " not found");
                 });
         return userEntity.getRole().name().equals("ADMIN")
@@ -38,12 +38,12 @@ public class CheckAccessService {
         log.info("Was invoked method for verify of access");
         UserEntity userEntity = userRepo.findByEmail(authentication.getName())
                 .orElseThrow(() -> {
-                    log.error("An EntityNotFoundException " + "(User " + authentication.getName() + " not found)" + "exception was thrown when calling the isAdminOrOwnerAd method of CheckAccessService");
+                    log.error("An EntityNotFoundException " + "(User " + authentication.getName() + " not found)" + " exception was thrown when calling the isAdminOrOwnerAd method of CheckAccessService");
                     return new EntityNotFoundException("User " + authentication.getName() + " not found");
                 });
         AdEntity adEntity = adRepo.findById(adId)
                 .orElseThrow(() -> {
-                    log.error("An EntityNotFoundException " + "(Comment " + adId + " not found)" + "exception was thrown when calling the isAdminOrOwnerComment method of CheckAccessService");
+                    log.error("An EntityNotFoundException " + "(Comment " + adId + " not found)" + " exception was thrown when calling the isAdminOrOwnerComment method of CheckAccessService");
                     return new EntityNotFoundException("Ad " + adId + " not found");
                 });
         return userEntity.getRole().name().equals("ADMIN")

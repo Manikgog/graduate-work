@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
+import ru.skypro.homework.service.CommentService;
 
 @Slf4j
 @RestController
@@ -37,9 +39,9 @@ public class CommentController {
                     content = @Content())
     })
     @GetMapping("/{id}/comments")
-    public ResponseEntity<Comments> get(@PathVariable Integer adId) {
+    public ResponseEntity<Comments> get(@PathVariable Integer id) {
         log.info("The get method of CommentController is called");
-        return ResponseEntity.ok(commentService.get(adId));
+        return ResponseEntity.ok(commentService.get(id));
     }
 
 

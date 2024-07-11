@@ -2,7 +2,7 @@ package ru.skypro.homework.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.config.MyUserDetails;
 import ru.skypro.homework.dto.Comment;
@@ -10,13 +10,11 @@ import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
 import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.CommentEntity;
-import ru.skypro.homework.exceptions.CommentNotFoundException;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.repository.AdRepo;
 import ru.skypro.homework.repository.CommentRepo;
 import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.service.UserService;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.util.List;
@@ -103,7 +101,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment update(Integer adId, Integer commentId, CreateOrUpdateComment newComment) {
         AdEntity adEntity = adRepo.findById((long) adId).orElseThrow(() -> new EntityNotFoundException("Объявление id=" + adId + " не найдено"));
-        CommentEntity commentEntity = commentRepo.findById((long) commentId).orElseThrow(() -> new CommentNotFoundException("Комментарий не существует"));
+        CommentEntity commentEntity = commentRepo.findById((long) commentId).orElseThrow(() -> new EntityNotFoundException("Комментарий не существует"));
         commentEntity.setText(newComment.getText());
         return commentMapper.CommentEntityToComment(commentRepo.save(commentEntity));
     }
