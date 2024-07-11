@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import ru.skypro.homework.entity.*;
+import ru.skypro.homework.exceptions.CommentDoesNotMatchTheAdException;
 import ru.skypro.homework.exceptions.EntityNotFoundException;
 import ru.skypro.homework.repository.AdRepo;
 import ru.skypro.homework.repository.CommentRepo;
@@ -37,9 +38,11 @@ public class CheckAccessService {
                     log.error("An EntityNotFoundException " + "(Comment " + commentId + " not found)" + "exception was thrown when calling the isAdminOrOwnerComment method of CheckAccessService");
                     return new EntityNotFoundException("Comment " + commentId + " not found");
                 });
+        if(!adEntity.equals(commentEntity.getAd())){
+            throw new CommentDoesNotMatchTheAdException("The comment does not match the ad");
+        }
         return userEntity.getRole().name().equals("ADMIN")
-                || (adEntity.equals(commentEntity.getAd())
-                && userEntity.getId().equals(commentEntity.getAuthor().getId()));
+                || userEntity.getId().equals(commentEntity.getAuthor().getId());
 
     }
 

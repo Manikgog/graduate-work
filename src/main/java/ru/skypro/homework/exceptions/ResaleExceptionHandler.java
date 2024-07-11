@@ -39,5 +39,10 @@ public class ResaleExceptionHandler {
     public ResponseEntity<String> handleWrongPasswordException(WrongPasswordException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+
+    @ExceptionHandler(CommentDoesNotMatchTheAdException.class)
+    public ResponseEntity<String> handleCommentDoesNotMatchTheAdException(CommentDoesNotMatchTheAdException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }
 
