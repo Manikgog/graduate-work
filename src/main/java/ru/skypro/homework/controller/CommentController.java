@@ -16,11 +16,13 @@ import ru.skypro.homework.dto.CreateOrUpdateComment;
 @Slf4j
 @RestController
 @RequestMapping("/ads")
+@RequiredArgsConstructor
 @Tag(name = "Комментарии")
 @CrossOrigin("http://localhost:3000")
 public class CommentController {
 
-    @Operation(summary = "Получение комментариев объявления" , responses = {
+    private final CommentService commentService;
+    @Operation(summary = "Получение комментариев объявления", responses = {
             @ApiResponse(responseCode = "200",
                     description = "OK",
                     content = @Content(
@@ -31,17 +33,17 @@ public class CommentController {
                     description = "Unauthorized",
                     content = @Content()),
             @ApiResponse(responseCode = "404",
-            description = "Not found",
-            content = @Content())
+                    description = "Not found",
+                    content = @Content())
     })
     @GetMapping("/{id}/comments")
-    public ResponseEntity<Comments> get(@PathVariable Integer id){
+    public ResponseEntity<Comments> get(@PathVariable Integer adId) {
         log.info("The get method of CommentController is called");
-        return ResponseEntity.ok(new Comments());
+        return ResponseEntity.ok(commentService.get(adId));
     }
 
 
-    @Operation(summary = "Добавление комментария к объявлению" , responses = {
+    @Operation(summary = "Добавление комментария к объявлению", responses = {
             @ApiResponse(responseCode = "200",
                     description = "OK",
                     content = @Content(
@@ -56,13 +58,14 @@ public class CommentController {
                     content = @Content())
     })
     @PostMapping("/{id}/comments")
-    public ResponseEntity<Comment> create(@PathVariable Integer id, @RequestBody CreateOrUpdateComment newComment){
+    public ResponseEntity<Comment> create(@PathVariable Integer id,
+                                          @RequestBody CreateOrUpdateComment newComment) {
         log.info("The create method of CommentController is called");
-        return ResponseEntity.ok(new Comment());
+        return ResponseEntity.ok(commentService.create(id,newComment));
     }
 
 
-    @Operation(summary = "Удаление комментария" , responses = {
+    @Operation(summary = "Удаление комментария", responses = {
             @ApiResponse(responseCode = "200",
                     description = "OK",
                     content = @Content()),
@@ -77,14 +80,15 @@ public class CommentController {
                     content = @Content())
     })
     @DeleteMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<?> delete(@PathVariable Integer adId, @PathVariable Integer commentId) {
+    public ResponseEntity<?> delete(@PathVariable Integer adId,
+                                    @PathVariable Integer commentId) {
         log.info("The delete method of CommentController is called");
+        commentService.delete(adId, commentId);
         return ResponseEntity.ok().build();
     }
 
 
-
-    @Operation(summary = "Обновление комментария" , responses = {
+    @Operation(summary = "Обновление комментария", responses = {
             @ApiResponse(responseCode = "200",
                     description = "OK",
                     content = @Content(
@@ -104,8 +108,8 @@ public class CommentController {
     @PatchMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Comment> update(@PathVariable Integer adId,
                                           @PathVariable Integer commentId,
-                                          @RequestBody CreateOrUpdateComment newComment){
+                                          @RequestBody CreateOrUpdateComment newComment) {
         log.info("The update method of CommentController is called");
-        return ResponseEntity.ok(new Comment());
+        return ResponseEntity.ok(commentService.update(adId, commentId, newComment));
     }
 }

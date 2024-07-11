@@ -5,8 +5,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-
-    <changeSet id="create-comment_table" author="M.Gogolin">
         <preConditions>
             <and>
                 <not>
