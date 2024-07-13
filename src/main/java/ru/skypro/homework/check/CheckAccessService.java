@@ -10,7 +10,6 @@ import ru.skypro.homework.repository.AdRepo;
 import ru.skypro.homework.repository.CommentRepo;
 import ru.skypro.homework.repository.UserRepo;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -38,8 +37,8 @@ public class CheckAccessService {
                     return new EntityNotFoundException("Comment " + commentId + " not found");
                 });
         return userEntity.getRole().name().equals("ADMIN")
-                || adEntity.equals(commentEntity.getAd())
-                || userEntity.getId().equals(commentEntity.getAuthor().getId());
+                || (adEntity.equals(commentEntity.getAd())
+                && userEntity.getId().equals(commentEntity.getAuthor().getId()));
     }
 
     public boolean isAdminOrOwnerAd(Long adId, Authentication authentication) {
@@ -55,23 +54,6 @@ public class CheckAccessService {
                     return new EntityNotFoundException("Ad " + adId + " not found");
                 });
         return userEntity.getRole().name().equals("ADMIN")
-                || userEntity.getId().equals(adEntity.getAuthor().getId());
-    }
-
-    public boolean isAuthorizedUser(Long id, Authentication authentication) {
-        log.info("Was invoked method for verify of access");
-        UserEntity userEntity = userRepo.findByEmail(authentication.getName())
-                .orElseThrow(() -> {
-                    log.error("An EntityNotFoundException " + "(User " + authentication.getName() + " not found)" + "exception was thrown when calling the isAuthorizedUser method of CheckAccessService");
-                    return new EntityNotFoundException("User " + authentication.getName() + " not found");
-                });
-        AdEntity adEntity = adRepo.findById(id)
-                .orElseThrow(() -> {
-                    log.error("An EntityNotFoundException " + "(Ad " + id + " not found)" + "exception was thrown when calling the isAdminOrOwnerAd method of CheckAccessService");
-                    return new EntityNotFoundException("Ad " + id + " not found");
-                });
-        return userEntity.getRole().name().equals("ADMIN")
-                || userEntity.getRole().name().equals("USER")
                 || userEntity.getId().equals(adEntity.getAuthor().getId());
     }
 }

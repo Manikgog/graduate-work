@@ -21,6 +21,6 @@ public interface AdMapper {
     @Mapping(target = "phone", source = "author.phone")
     ExtendedAd adEntityToExtendedAd(AdEntity source);
 
-    void CreateOrUpdateAdToAdEntity(CreateOrUpdateAd source, @MappingTarget AdEntity target);
+    void createOrUpdateAdToAdEntity(CreateOrUpdateAd source, @MappingTarget AdEntity target);
 
 }

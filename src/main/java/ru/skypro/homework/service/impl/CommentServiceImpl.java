@@ -37,12 +37,12 @@ public class CommentServiceImpl implements CommentService {
      * @return Comments - DTO комментариев объявлений
      */
     @Override
-    public Comments get(Integer adId) {
-        List<Comment> comment = commentRepo.findByAdId((long) adId).orElseThrow(() -> {
+    public Comments get(long adId) {
+        List<Comment> comment = commentRepo.findByAdId(adId).orElseThrow(() -> {
                     log.info("The get method of CommentServiceImpl is called");
                     return new EntityNotFoundException("Комментариев к объявлению с id=" + adId + " не найдено");
                 }).stream()
-                .map(commentMapper::CommentEntityToComment)
+                .map(commentMapper::commentEntityToComment)
                 .toList();
         Comments comments = new Comments();
         comments.setCount(comment.size());
@@ -58,8 +58,8 @@ public class CommentServiceImpl implements CommentService {
      * @return Comment - DTO созданного комментария
      */
     @Override
-    public Comment create(Integer adId, CreateOrUpdateComment newComment) {
-        AdEntity adEntity = adRepo.findById((long) adId).orElseThrow(() -> {
+    public Comment create(long adId, CreateOrUpdateComment newComment) {
+        AdEntity adEntity = adRepo.findById(adId).orElseThrow(() -> {
             log.info("The create method of CommentServiceImpl is called");
             return new EntityNotFoundException("Объявление id=" + adId + " не найдено");
         });
@@ -71,33 +71,31 @@ public class CommentServiceImpl implements CommentService {
         commentEntity.setText(newComment.getText());
         commentRepo.save(commentEntity);
 
-        return commentMapper.CommentEntityToComment(commentEntity);
+        return commentMapper.commentEntityToComment(commentEntity);
     }
 
     /**
      * Метод для удаления комментария к объявлению
      *
-     * @param adId      - идентификатор объявления
      * @param commentId - идентификатор комментария
      */
     @Override
-    public void delete(Integer adId, Integer commentId) {
-        commentRepo.deleteById((long) commentId);
+    public void delete(long commentId) {
+        commentRepo.deleteById(commentId);
 
     }
 
     /**
      * Метод для обновления комментария к объявлению
      *
-     * @param adId       - идентификатор объявления
      * @param commentId  - идентификатор комментария
      * @param newComment - объект с полями для обновления нового комментария
      * @return Comment - DTO обновленного комментария
      */
     @Override
-    public Comment update(Integer adId, Integer commentId, CreateOrUpdateComment newComment) {
-        CommentEntity commentEntity = commentRepo.findById((long) commentId).orElseThrow();
+    public Comment update(long commentId, CreateOrUpdateComment newComment) {
+        CommentEntity commentEntity = commentRepo.findById(commentId).orElseThrow();
         commentEntity.setText(newComment.getText());
-        return commentMapper.CommentEntityToComment(commentRepo.save(commentEntity));
+        return commentMapper.commentEntityToComment(commentRepo.save(commentEntity));
     }
 }

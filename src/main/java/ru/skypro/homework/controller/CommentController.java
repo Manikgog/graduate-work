@@ -40,7 +40,6 @@ public class CommentController {
                     description = "Not found",
                     content = @Content())
     })
-    @PreAuthorize("@checkAccessService.isAuthorizedUser(#id, authentication)")
     @GetMapping("/{id}/comments")
     public ResponseEntity<Comments> get(@PathVariable Integer id) {
         log.info("The get method of CommentController is called");
@@ -62,7 +61,6 @@ public class CommentController {
                     description = "Not found",
                     content = @Content())
     })
-    @PreAuthorize("@checkAccessService.isAuthorizedUser(#id, authentication)")
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> create(@PathVariable Integer id,
                                           @RequestBody CreateOrUpdateComment newComment) {
@@ -90,7 +88,7 @@ public class CommentController {
     public ResponseEntity<?> delete(@PathVariable Integer adId,
                                     @PathVariable Integer commentId) {
         log.info("The delete method of CommentController is called");
-        commentService.delete(adId, commentId);
+        commentService.delete(commentId);
         return ResponseEntity.ok().build();
     }
 
@@ -118,6 +116,6 @@ public class CommentController {
                                           @PathVariable Integer commentId,
                                           @RequestBody CreateOrUpdateComment newComment) {
         log.info("The update method of CommentController is called");
-        return ResponseEntity.ok(commentService.update(adId, commentId, newComment));
+        return ResponseEntity.ok(commentService.update(commentId, newComment));
     }
 }

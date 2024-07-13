@@ -160,7 +160,7 @@ public class AdsServiceImpl implements AdsService{
             log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the updateAds method of AdsServiceImpl");
             return new EntityNotFoundException("Объявление с id=" + id + " не найдено");
         });
-        adMapper.CreateOrUpdateAdToAdEntity(createOrUpdateAd, adEntity);
+        adMapper.createOrUpdateAdToAdEntity(createOrUpdateAd, adEntity);
         return adMapper.adEntityToAd(adRepo.save(adEntity));
     }
 
