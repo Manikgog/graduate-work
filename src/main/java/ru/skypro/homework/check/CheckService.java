@@ -4,10 +4,11 @@ import org.springframework.stereotype.Component;
 import ru.skypro.homework.exceptions.WrongNumberException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static ru.skypro.homework.constants.Constants.PHONE_PATTERN;
 
 @Component
 public class CheckService {
-    private final Pattern pat = Pattern.compile("\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}");
+    private final Pattern pat = Pattern.compile(PHONE_PATTERN);
 
     public void checkNumber(int minLength, int maxLength, int number) {
         if(number < minLength){

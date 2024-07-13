@@ -42,7 +42,7 @@ public class CheckAccessService {
         if(!adEntity.equals(commentEntity.getAd())){
             throw new CommentDoesNotMatchTheAdException("The comment does not match the ad");
         }
-        return userEntity.getRole().equals(Role.ADMIN)
+        return userEntity.getRole().equals(Role.ROLE_ADMIN)
                 || userEntity.getId().equals(commentEntity.getAuthor().getId());
 
     }
@@ -59,7 +59,7 @@ public class CheckAccessService {
                     log.error("An EntityNotFoundException " + "(Ad " + adId + " not found)" + "exception was thrown when calling the isAdminOrOwnerAd method of CheckAccessService");
                     return new EntityNotFoundException("Ad " + adId + " not found");
                 });
-        return userEntity.getRole().equals(Role.ADMIN)
+        return userEntity.getRole().equals(Role.ROLE_ADMIN)
                 || userEntity.getId().equals(adEntity.getAuthor().getId());
     }
 

@@ -2,7 +2,6 @@ package ru.skypro.homework.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.check.CheckService;
@@ -26,6 +25,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.skypro.homework.constants.Constants.MAX_PRICE;
+import static ru.skypro.homework.constants.Constants.MIN_PRICE;
+
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -48,7 +50,7 @@ public class AdsServiceImpl implements AdsService{
     @Override
     public Ad createAd(CreateOrUpdateAd createOrUpdateAd, MultipartFile image) {
         log.info("The createAd method of AdsServiceImpl is called");
-        checkService.checkNumber(constants.MIN_PRICE, constants.MAX_PRICE, createOrUpdateAd.getPrice());
+        checkService.checkNumber(MIN_PRICE, MAX_PRICE, createOrUpdateAd.getPrice());
 
         MyUserDetails userDetails = userService.getUserDetails();
         AdEntity newAd = new AdEntity();
@@ -105,9 +107,9 @@ public class AdsServiceImpl implements AdsService{
      * @return ExtendedAd - объект объявления с большим количеством полей
      */
     @Override
-    public ExtendedAd getAd(int id) {
+    public ExtendedAd getAd(Long id) {
         log.info("The getAd method of AdsServiceImpl is called");
-        AdEntity adEntity = adRepo.findById((long)id).orElseThrow(() -> {
+        AdEntity adEntity = adRepo.findById(id).orElseThrow(() -> {
             log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the getAd method of AdsServiceImpl");
             return new EntityNotFoundException("Объявление id=" + id + " не найдено");
         });
@@ -120,15 +122,15 @@ public class AdsServiceImpl implements AdsService{
      * @param id - идентификатор
      */
     @Override
-    public void deleteAd(int id) {
+    public void deleteAd(Long id) {
         log.info("The deleteAd method of AdsServiceImpl is called");
-        adRepo.deleteById((long)id);
+        adRepo.deleteById(id);
     }
 
     @Override
-    public List<String> updateImage(int id, MultipartFile image) {
+    public List<String> updateImage(Long id, MultipartFile image) {
         log.info("The updateImage method of AdsServiceImpl is called");
-        AdEntity adEntity = adRepo.findById((long)id).orElseThrow(() -> {
+        AdEntity adEntity = adRepo.findById(id).orElseThrow(() -> {
             log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the updateImage method of AdsServiceImpl");
             return new EntityNotFoundException("Объявление id=" + id + " не найдено");
         });
@@ -137,7 +139,7 @@ public class AdsServiceImpl implements AdsService{
         adEntity.setImage(path.toString());
         AdEntity adFromDB = adRepo.save(adEntity);
         List<String> images = new ArrayList<>();
-        images.add(path.toString());
+        images.add(adFromDB.getImage());
         return images;
     }
 
@@ -153,9 +155,9 @@ public class AdsServiceImpl implements AdsService{
     }
 
     @Override
-    public Ad updateAds(int id, CreateOrUpdateAd createOrUpdateAd) {
+    public Ad updateAds(Long id, CreateOrUpdateAd createOrUpdateAd) {
         log.info("The updateAds method of AdsServiceImpl is called");
-        AdEntity adEntity = adRepo.findById((long)id).orElseThrow(() -> {
+        AdEntity adEntity = adRepo.findById(id).orElseThrow(() -> {
             log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the updateAds method of AdsServiceImpl");
             return new EntityNotFoundException("Объявление с id=" + id + " не найдено");
         });

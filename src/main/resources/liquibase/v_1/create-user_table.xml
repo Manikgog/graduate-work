@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
+<databaseChangeLog>
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <changeset id="create-user_table" author="M.Gogolin">
         <preConditions>
             <not>
                 <tableExists tableName="user_table"/>
@@ -27,7 +28,7 @@
             <column name="phone" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="role" type="VARCHAR(5)">
+            <column name="role" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
             <column name="image" type="TEXT"/>
@@ -36,6 +37,6 @@
             </column>
         </createTable>
 
-    </changeSet>
+    </changeset>
 
 </databaseChangeLog>

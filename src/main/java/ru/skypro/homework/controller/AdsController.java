@@ -71,7 +71,7 @@ public class AdsController {
 
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content())})
     @GetMapping("/{id}")
-    public ResponseEntity<ExtendedAd> getAdsExtended(@PathVariable("id") int id) {
+    public ResponseEntity<ExtendedAd> getAdsExtended(@PathVariable("id") Long id) {
         log.info("The getAdsExtended method of AdsController is called");
         return ResponseEntity.ok().body(adsService.getAd(id));
     }
@@ -90,7 +90,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not found")})
     @PreAuthorize("@checkAccessService.isAdminOrOwnerAd(#id, authentication)")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAds(@PathVariable int id) {
+    public ResponseEntity<Void> deleteAds(@PathVariable Long id) {
         log.info("The deleteAds method of AdsController is called");
         adsService.deleteAd(id);
         return ResponseEntity.ok().build();
@@ -112,7 +112,7 @@ public class AdsController {
     })
     @PreAuthorize("@checkAccessService.isAdminOrOwnerAd(#id, authentication)")
     @PatchMapping("/{id}")
-    public ResponseEntity<Ad> updateAds(@PathVariable("id") int id, @RequestBody CreateOrUpdateAd createOrUpdateAd) {
+    public ResponseEntity<Ad> updateAds(@PathVariable("id") Long id, @RequestBody CreateOrUpdateAd createOrUpdateAd) {
         return ResponseEntity.ok().body(adsService.updateAds(id, createOrUpdateAd));
     }
 
@@ -147,7 +147,7 @@ public class AdsController {
     })
     @PreAuthorize("@checkAccessService.isAdminOrOwnerAd(#id, authentication)")
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<String>> updateImage(@PathVariable int id,
+    public ResponseEntity<List<String>> updateImage(@PathVariable Long id,
                                                     @RequestPart(value = "image") MultipartFile image) {
         return ResponseEntity.ok().body(adsService.updateImage(id, image));
     }
