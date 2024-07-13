@@ -63,20 +63,4 @@ public class CheckAccessService {
                 || userEntity.getId().equals(adEntity.getAuthor().getId());
     }
 
-    /*public boolean isAuthorizedUser(Long id, Authentication authentication) {
-        log.info("Was invoked method for verify of access");
-        UserEntity userEntity = userRepo.findByEmail(authentication.getName())
-                .orElseThrow(() -> {
-                    log.error("An EntityNotFoundException " + "(User " + authentication.getName() + " not found)" + "exception was thrown when calling the isAuthorizedUser method of CheckAccessService");
-                    return new EntityNotFoundException("User " + authentication.getName() + " not found");
-                });
-        AdEntity adEntity = adRepo.findById(id)
-                .orElseThrow(() -> {
-                    log.error("An EntityNotFoundException " + "(Ad " + id + " not found)" + "exception was thrown when calling the isAdminOrOwnerAd method of CheckAccessService");
-                    return new EntityNotFoundException("Ad " + id + " not found");
-                });
-        return userEntity.getRole().name().equals("ADMIN")
-                || userEntity.getRole().name().equals("USER")
-                || userEntity.getId().equals(adEntity.getAuthor().getId());
-    }*/
 }
