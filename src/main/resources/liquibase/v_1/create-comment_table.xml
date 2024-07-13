@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog>
+<databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeset id="create-comment_table" author="M.Gogolin">
+    <changeSet id="create-comment_table" author="M.Gogolin">
         <preConditions>
             <and>
                 <not>
@@ -45,6 +45,6 @@
                                  constraintName="FK COMMENT_TABLE AD_ID -> AD_TABLE ID"
                                  referencedTableName="ad_table"
                                  referencedColumnNames="id"/>
-    </changeset>
+    </changeSet>
 
 </databaseChangeLog>

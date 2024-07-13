@@ -40,7 +40,7 @@ public class CommentServiceImpl implements CommentService {
                     log.info("The get method of CommentServiceImpl is called");
                     return new EntityNotFoundException("Комментариев к объявлению с id=" + adId + " не найдено");
                 }).stream()
-                .map(commentMapper::CommentEntityToComment)
+                .map(commentMapper::commentEntityToComment)
                 .toList();
         Comments comments = new Comments();
         comments.setCount(comment.size());
@@ -69,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
         commentEntity.setText(newComment.getText());
         commentRepo.save(commentEntity);
 
-        return commentMapper.CommentEntityToComment(commentEntity);
+        return commentMapper.commentEntityToComment(commentEntity);
     }
 
     /**
@@ -96,6 +96,6 @@ public class CommentServiceImpl implements CommentService {
     public Comment update(Long adId, Long commentId, CreateOrUpdateComment newComment) {
         CommentEntity commentEntity = commentRepo.findById(commentId).orElseThrow();
         commentEntity.setText(newComment.getText());
-        return commentMapper.CommentEntityToComment(commentRepo.save(commentEntity));
+        return commentMapper.commentEntityToComment(commentRepo.save(commentEntity));
     }
 }

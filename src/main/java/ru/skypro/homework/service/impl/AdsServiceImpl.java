@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.config.MyUserDetails;
-import ru.skypro.homework.constants.Constants;
 import ru.skypro.homework.dto.Ad;
 import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
@@ -37,9 +36,8 @@ public class AdsServiceImpl implements AdsService{
     private final UserService userService;
     private final FileManager fileManager;
     private final CheckService checkService;
-    private final Constants constants;
-    private final AdEntityToExtendedAdMapper adEntityToExtendedAdMapper = new AdEntityToExtendedAdMapper();
-    private final AdToAdEntity adToAdEntity = new AdToAdEntity();
+    private final AdEntityToExtendedAdMapper adEntityToExtendedAdMapper;
+    private final AdToAdEntity adToAdEntity;
 
     /**
      * Метод для добавления объявления в базу данных
@@ -161,7 +159,7 @@ public class AdsServiceImpl implements AdsService{
             log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the updateAds method of AdsServiceImpl");
             return new EntityNotFoundException("Объявление с id=" + id + " не найдено");
         });
-        adMapper.CreateOrUpdateAdToAdEntity(createOrUpdateAd, adEntity);
+        adMapper.createOrUpdateAdToAdEntity(createOrUpdateAd, adEntity);
         return adMapper.adEntityToAd(adRepo.save(adEntity));
     }
 

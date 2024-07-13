@@ -21,6 +21,7 @@ import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
 import java.nio.file.Path;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -90,10 +91,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateImage(MultipartFile photo) {
         log.info("The updateImage method of setNewPassword is called");
+        UUID uuid = UUID.randomUUID();
         MyUserDetails userDetails = getUserDetails();
-        Path path = fileManager.uploadUserPhoto(userDetails.getUsername(), photo);
+        Path path = fileManager.uploadUserPhoto(uuid.toString(), photo);
         UserEntity userEntity = userDetails.getUser();
-        userEntity.setImage("\\" + path.toString());
+        String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
+        userEntity.setImage(fileName);
         userRepo.save(userEntity);
         return userMapper.toUser(userEntity);
     }

@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExtendedAd {
     @Schema(description = "id объявления")
-    int pk;
+    Long pk;
     @Schema(description = "имя автора объявления")
     String authorFirstName;
     @Schema(description = "фамилия автора объявления")
