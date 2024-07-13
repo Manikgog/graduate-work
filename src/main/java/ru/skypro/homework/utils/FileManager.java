@@ -1,11 +1,12 @@
 package ru.skypro.homework.utils;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.config.WebSecurityConfig;
 import ru.skypro.homework.exceptions.ImageNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,29 +18,26 @@ import java.util.Arrays;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class FileManager {
-    @Value("${path.to.userImages.folder}")
-    private String userImagesFolder;
-
-    @Value("${path.to.adImages.folder}")
-    private String adImagesFolder;
+    private final WebSecurityConfig webSecurityConfig;
 
     /**
      * Метод для записи файла с изображением на диск, а пути к этому файлу в базу данных.
-     * @param username - email пользователя
+     * @param uuid - uuid
      * @param image - файл с изображением
      * @return Path - объект пути к записанному файлу
      */
-    public Path uploadUserPhoto(String username, MultipartFile image) {
+    public Path uploadUserPhoto(String uuid, MultipartFile image) {
         log.info("The uploadUserPhoto method of FileManager is called");
         try {
             String fileName = String.format(
                     "%s.%s",
-                    username,
+                    uuid,
                     StringUtils.getFilenameExtension(image.getOriginalFilename())
             );
             byte[] data = image.getBytes();
-            Path path = Paths.get(userImagesFolder, fileName);
+            Path path = Paths.get(webSecurityConfig.getUserImagesFolder(), fileName);
             Files.write(path, data);
             return path;
         }catch (IOException e) {
@@ -49,22 +47,20 @@ public class FileManager {
 
     /**
      * Метод для записи файла с изображением на диск, а пути к этому файлу в базу данных.
-     * @param username - email пользователя, разместившего объявление
-     * @param adTitle - название объявления
+     * @param uuid - uuid
      * @param image - файл с изображением
      * @return Path - объект пути к записанному файлу
      */
-    public Path uploadAdPhoto(String username, String adTitle, MultipartFile image) {
+    public Path uploadAdPhoto(String uuid, MultipartFile image) {
         log.info("The uploadAdPhoto method of FileManager is called");
         try {
             String fileName = String.format(
-                    "%s_%s.%s",
-                    username,
-                    adTitle,
+                    "%s.%s",
+                    uuid,
                     StringUtils.getFilenameExtension(image.getOriginalFilename())
             );
             byte[] data = image.getBytes();
-            Path path = Paths.get(adImagesFolder, fileName);
+            Path path = Paths.get(webSecurityConfig.getAdImagesFolder(), fileName);
             Files.write(path, data);
             return path;
         }catch (IOException e) {
@@ -74,7 +70,7 @@ public class FileManager {
 
     /**
      * Метод для чтения файла по указанному пути
-     * @param path - объект пути
+     * @param path - путь к файлу
      * @param response - ответ для записи содержимого файла
      */
     public void getImage(Path path, HttpServletResponse response) {

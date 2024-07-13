@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -7,20 +8,24 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.config.MyUserDetails;
-import ru.skypro.homework.constants.Constants;
+import ru.skypro.homework.config.WebSecurityConfig;
 import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
 import ru.skypro.homework.entity.UserEntity;
+import ru.skypro.homework.exceptions.EntityNotFoundException;
 import ru.skypro.homework.exceptions.WrongPasswordException;
 import ru.skypro.homework.mapper.UpdateUserMapper;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepo;
-import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @Slf4j
@@ -34,7 +39,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder encoder;
     private final FileManager fileManager;
     private final CheckService checkService;
-    private final Constants constants;
+    private final WebSecurityConfig webSecurityConfig;
+
 
     /**
      * Метод для установки нового пароля для входа
@@ -63,7 +69,9 @@ public class UserServiceImpl implements UserService {
     public User getUser() {
         log.info("The getUser method of setNewPassword is called");
         MyUserDetails userDetails = getUserDetails();
-        return userMapper.toUser(userDetails.getUser());
+        User user = userMapper.toUser(userDetails.getUser());
+        user.setImage("/users/" + user.getId() + "/image");
+        return user;
     }
 
     /**
@@ -83,22 +91,33 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    public URL getImage(Long id, HttpServletResponse response) throws MalformedURLException {
+        log.info("The getPhoto method of UserServiceImpl is called");
+        UserEntity userEntity = userRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id=" + id + " not found"));
+        Path path = Paths.get(webSecurityConfig.getUserImagesFolder(), userEntity.getImage());
+        fileManager.getImage(path, response);
+        return path.toUri().toURL();
+    }
+
     /**
      * Метод для обновления фотографии пользователя
-     * @param photo - файл с фотографией пользователя
+     * @param image - файл с фотографией пользователя
      * @return User - объект пользователя
      */
     @Override
-    public User updateImage(MultipartFile photo) {
+    public User updateImage(MultipartFile image) {
         log.info("The updateImage method of setNewPassword is called");
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = webSecurityConfig.getUuid();
         MyUserDetails userDetails = getUserDetails();
-        Path path = fileManager.uploadUserPhoto(uuid.toString(), photo);
+        Path path = fileManager.uploadUserPhoto(uuid.toString(), image);
         UserEntity userEntity = userDetails.getUser();
         String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
         userEntity.setImage(fileName);
-        userRepo.save(userEntity);
-        return userMapper.toUser(userEntity);
+        UserEntity userEntityFromDB = userRepo.save(userEntity);
+        User user = userMapper.toUser(userEntity);
+        user.setImage("/users/" + userEntityFromDB.getId() + "/image");
+        return user;
     }
 
     /**

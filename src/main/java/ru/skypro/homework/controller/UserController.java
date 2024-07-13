@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,9 @@ import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
 import ru.skypro.homework.service.UserService;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 @Slf4j
 @RequestMapping("/users")
@@ -104,6 +108,22 @@ public class UserController {
         log.info("The updateImage method of UserController is called");
         userService.updateImage(image);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Получение фотографии пользователя по его id",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Получение изображения пользователя по его id прошло успешно",
+                            content = @Content(
+                                    mediaType = MediaType.MULTIPART_FORM_DATA_VALUE
+                            )
+                    )
+            }
+    )
+    @GetMapping(value = "/{id}/image")
+    public ResponseEntity<URL> getUserPhoto(@PathVariable Long id, HttpServletResponse response) throws MalformedURLException {
+        return ResponseEntity.ok(userService.getImage(id, response));
     }
 
 

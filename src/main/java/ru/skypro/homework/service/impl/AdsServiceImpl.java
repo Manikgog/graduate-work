@@ -1,11 +1,13 @@
 package ru.skypro.homework.service.impl;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.config.MyUserDetails;
+import ru.skypro.homework.config.WebSecurityConfig;
 import ru.skypro.homework.dto.Ad;
 import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
@@ -20,9 +22,13 @@ import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static ru.skypro.homework.constants.Constants.MAX_PRICE;
 import static ru.skypro.homework.constants.Constants.MIN_PRICE;
@@ -38,6 +44,7 @@ public class AdsServiceImpl implements AdsService{
     private final CheckService checkService;
     private final AdEntityToExtendedAdMapper adEntityToExtendedAdMapper;
     private final AdToAdEntity adToAdEntity;
+    private final WebSecurityConfig webSecurityConfig;
 
     /**
      * Метод для добавления объявления в базу данных
@@ -49,7 +56,6 @@ public class AdsServiceImpl implements AdsService{
     public Ad createAd(CreateOrUpdateAd createOrUpdateAd, MultipartFile image) {
         log.info("The createAd method of AdsServiceImpl is called");
         checkService.checkNumber(MIN_PRICE, MAX_PRICE, createOrUpdateAd.getPrice());
-
         MyUserDetails userDetails = userService.getUserDetails();
         AdEntity newAd = new AdEntity();
         newAd.setTitle(createOrUpdateAd.getTitle());
@@ -57,13 +63,18 @@ public class AdsServiceImpl implements AdsService{
         newAd.setPrice(createOrUpdateAd.getPrice());
         newAd.setDescription(createOrUpdateAd.getDescription());
         if(!image.isEmpty()){
-            Path path = fileManager.uploadAdPhoto(userDetails.getUser().getEmail(), createOrUpdateAd.getTitle(), image);
-            newAd.setImage(path.toString());
+            Path path = fileManager.uploadAdPhoto(webSecurityConfig.getUuid().toString(), image);
+            String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
+            newAd.setImage(fileName);
             AdEntity adFromDB = adRepo.save(newAd);
-            return adMapper.adEntityToAd(adFromDB);
+            Ad ad = adMapper.adEntityToAd(adFromDB);
+            ad.setImage("/ads/" + ad.getPk() + "/image");
+            return ad;
         }
         AdEntity adFromDB = adRepo.save(newAd);
-        return adMapper.adEntityToAd(adFromDB);
+        Ad ad = adMapper.adEntityToAd(adFromDB);
+        ad.setImage("/ads/" + ad.getPk() + "/image");
+        return ad;
     }
 
 
@@ -75,6 +86,9 @@ public class AdsServiceImpl implements AdsService{
     public Ads getAdAll() {
         log.info("The getAdAll method of AdsServiceImpl is called");
         List<Ad> adList = adRepo.findAll().stream().map(adMapper::adEntityToAd).toList();
+        for(Ad ad : adList){
+            ad.setImage("/ads/" + ad.getPk() + "/image");
+        }
         Ads ads = new Ads();
         ads.setCount(adList.size());
         ads.setResults(adList);
@@ -95,7 +109,9 @@ public class AdsServiceImpl implements AdsService{
             return new EntityNotFoundException("Объявление id=" + ad.getPk() + " не найдено");
         });
         adToAdEntity.perform(ad, adEntity, userService.getUserDetails().getUser());
-        return adMapper.adEntityToAd(adRepo.save(adEntity));
+        Ad newAd = adMapper.adEntityToAd(adRepo.save(adEntity));
+        newAd.setImage("/ads/" + ad.getPk() + "/image");
+        return newAd;
     }
 
 
@@ -111,7 +127,9 @@ public class AdsServiceImpl implements AdsService{
             log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the getAd method of AdsServiceImpl");
             return new EntityNotFoundException("Объявление id=" + id + " не найдено");
         });
-        return adEntityToExtendedAdMapper.perform(adEntity);
+        ExtendedAd extendedAd = adEntityToExtendedAdMapper.perform(adEntity);
+        extendedAd.setImage("/ads/" + extendedAd.getPk() + "/image");
+        return extendedAd;
     }
 
 
@@ -133,9 +151,12 @@ public class AdsServiceImpl implements AdsService{
             return new EntityNotFoundException("Объявление id=" + id + " не найдено");
         });
         MyUserDetails userDetails = userService.getUserDetails();
-        Path path = fileManager.uploadAdPhoto(userDetails.getUser().getEmail(), adEntity.getTitle(), image);
-        adEntity.setImage(path.toString());
+        UUID uuid = webSecurityConfig.getUuid();
+        Path path = fileManager.uploadAdPhoto(uuid.toString(), image);
+        String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
+        adEntity.setImage(fileName);
         AdEntity adFromDB = adRepo.save(adEntity);
+        adFromDB.setImage("/ads/" + adFromDB.getId() + "/image");
         List<String> images = new ArrayList<>();
         images.add(adFromDB.getImage());
         return images;
@@ -146,6 +167,9 @@ public class AdsServiceImpl implements AdsService{
         log.info("The getAdsAuthorizedUser method of AdsServiceImpl is called");
         MyUserDetails userDetails = userService.getUserDetails();
         List<Ad> adList = adRepo.findByAuthor(userDetails.getUser()).stream().map(adMapper::adEntityToAd).toList();
+        for(Ad ad : adList){
+            ad.setImage("/ads/" + ad.getPk() + "/image");
+        }
         Ads ads = new Ads();
         ads.setCount(adList.size());
         ads.setResults(adList);
@@ -160,8 +184,18 @@ public class AdsServiceImpl implements AdsService{
             return new EntityNotFoundException("Объявление с id=" + id + " не найдено");
         });
         adMapper.createOrUpdateAdToAdEntity(createOrUpdateAd, adEntity);
-        return adMapper.adEntityToAd(adRepo.save(adEntity));
+        Ad ad = adMapper.adEntityToAd(adRepo.save(adEntity));
+        ad.setImage("/ads/" + ad.getPk() + "/image");
+        return ad;
     }
 
 
+    @Override
+    public URL getImage(Long id, HttpServletResponse response) throws MalformedURLException {
+        log.info("The getImage method of AdsServiceImpl is called");
+        AdEntity adEntity = adRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Ad with id=" + id + " not found"));
+        Path path = Paths.get(webSecurityConfig.getAdImagesFolder(), adEntity.getImage());
+        fileManager.getImage(path, response);
+        return path.toUri().toURL();
+    }
 }

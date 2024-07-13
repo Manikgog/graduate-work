@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.service.AdsService;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 @Slf4j
@@ -150,5 +153,23 @@ public class AdsController {
     public ResponseEntity<List<String>> updateImage(@PathVariable Long id,
                                                     @RequestPart(value = "image") MultipartFile image) {
         return ResponseEntity.ok().body(adsService.updateImage(id, image));
+    }
+
+
+
+    @Operation(summary = "Получение фотографии товара по его id", tags = {"Объявления"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Получение изображения товара по его id прошло успешно",
+                            content = @Content(
+                                    mediaType = MediaType.MULTIPART_FORM_DATA_VALUE
+                            )
+                    )
+            }
+    )
+    @GetMapping(value = "/{id}/image")
+    public ResponseEntity<URL> getAdImage(@PathVariable Long id, HttpServletResponse response) throws MalformedURLException {
+        return ResponseEntity.ok(adsService.getImage(id, response));
     }
 }

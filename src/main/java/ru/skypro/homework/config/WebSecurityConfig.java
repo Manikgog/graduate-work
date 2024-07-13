@@ -1,5 +1,7 @@
 package ru.skypro.homework.config;
 
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -9,12 +11,28 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.UUID;
+
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
+    @Getter
+    @Value("${path.to.userImages.folder}")
+    private String userImagesFolder;
+
+    @Getter
+    private UUID uuid = UUID.randomUUID();
+
+    @Getter
+    @Value("${path.to.adImages.folder}")
+    private String adImagesFolder;
+
+    @Getter
+    @Value("${server.port}")
+    private int port;
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-resources/**",
