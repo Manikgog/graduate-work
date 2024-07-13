@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.entity.*;
 import ru.skypro.homework.exceptions.CommentDoesNotMatchTheAdException;
 import ru.skypro.homework.exceptions.EntityNotFoundException;
@@ -41,7 +42,7 @@ public class CheckAccessService {
         if(!adEntity.equals(commentEntity.getAd())){
             throw new CommentDoesNotMatchTheAdException("The comment does not match the ad");
         }
-        return userEntity.getRole().name().equals("ADMIN")
+        return userEntity.getRole().equals(Role.ADMIN)
                 || userEntity.getId().equals(commentEntity.getAuthor().getId());
 
     }
@@ -58,11 +59,11 @@ public class CheckAccessService {
                     log.error("An EntityNotFoundException " + "(Ad " + adId + " not found)" + "exception was thrown when calling the isAdminOrOwnerAd method of CheckAccessService");
                     return new EntityNotFoundException("Ad " + adId + " not found");
                 });
-        return userEntity.getRole().name().equals("ADMIN")
+        return userEntity.getRole().equals(Role.ADMIN)
                 || userEntity.getId().equals(adEntity.getAuthor().getId());
     }
 
-    public boolean isAuthorizedUser(Long id, Authentication authentication) {
+    /*public boolean isAuthorizedUser(Long id, Authentication authentication) {
         log.info("Was invoked method for verify of access");
         UserEntity userEntity = userRepo.findByEmail(authentication.getName())
                 .orElseThrow(() -> {
@@ -77,5 +78,5 @@ public class CheckAccessService {
         return userEntity.getRole().name().equals("ADMIN")
                 || userEntity.getRole().name().equals("USER")
                 || userEntity.getId().equals(adEntity.getAuthor().getId());
-    }
+    }*/
 }

@@ -2,6 +2,7 @@ package ru.skypro.homework.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.check.CheckService;
@@ -47,8 +48,6 @@ public class AdsServiceImpl implements AdsService{
     @Override
     public Ad createAd(CreateOrUpdateAd createOrUpdateAd, MultipartFile image) {
         log.info("The createAd method of AdsServiceImpl is called");
-        checkService.checkString(constants.MIN_LENGTH_TITLE_AD, constants.MAX_LENGTH_TITLE_AD, createOrUpdateAd.getTitle());
-        checkService.checkString(constants.MIN_LENGTH_DESCRIPTION_AD, constants.MAX_LENGTH_DESCRIPTION_AD, createOrUpdateAd.getDescription());
         checkService.checkNumber(constants.MIN_PRICE, constants.MAX_PRICE, createOrUpdateAd.getPrice());
 
         MyUserDetails userDetails = userService.getUserDetails();

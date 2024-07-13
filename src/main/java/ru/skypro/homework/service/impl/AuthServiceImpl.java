@@ -2,10 +2,11 @@ package ru.skypro.homework.service.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.config.MyUserDetails;
-import ru.skypro.homework.config.MyUserDetailsService;
+import ru.skypro.homework.check.CheckService;
 import ru.skypro.homework.constants.Constants;
 import ru.skypro.homework.dto.Login;
 import ru.skypro.homework.dto.Register;
@@ -13,7 +14,7 @@ import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.RegisterMapper;
 import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.AuthService;
-import ru.skypro.homework.check.CheckService;
+
 import java.util.Optional;
 
 @Slf4j
@@ -21,7 +22,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final MyUserDetailsService myUserDetailService;
+    private final UserDetailsService userDetailsService;
     private final PasswordEncoder encoder;
     private final RegisterMapper registerMapper;
     private final UserRepo userRepo;
@@ -37,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean login(String userName, String password) {
         log.info("The login method of AuthServiceImpl is called");
-        MyUserDetails userDetails = myUserDetailService.loadUserByUsername(userName);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
         return encoder.matches(password, userDetails.getPassword());
     }
 
@@ -48,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
      */
     public boolean login(Login login) {
         log.info("The login method of AuthServiceImpl is called");
-        MyUserDetails userDetails = myUserDetailService.loadUserByUsername(login.getUsername());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(login.getUsername());
         return encoder.matches(login.getPassword(), userDetails.getPassword());
     }
 
@@ -64,12 +65,7 @@ public class AuthServiceImpl implements AuthService {
         if (userEntity.isPresent()) {
             return false;
         }
-        checkService.checkString(constants.MIN_LENGTH_USERNAME, constants.MAX_LENGTH_USERNAME, register.getUsername());
-        checkService.checkString(constants.MIN_LENGTH_PASSWORD, constants.MAX_LENGTH_PASSWORD, register.getPassword());
-        checkService.checkString(constants.MIN_LENGTH_FIRSTNAME, constants.MAX_LENGTH_FIRSTNAME, register.getFirstName());
-        checkService.checkString(constants.MIN_LENGTH_LASTNAME, constants.MAX_LENGTH_LASTNAME, register.getLastName());
-        checkService.checkPhone(constants.PHONE_PATTERN, register.getPhone());
-        checkService.checkRole(register.getRole());
+        checkService.checkPhone(register.getPhone());
         UserEntity newUserEntity = registerMapper.toUserEntity(register);
         newUserEntity.setPassword(encoder.encode(register.getPassword()));
         userRepo.save(newUserEntity);

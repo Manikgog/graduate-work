@@ -44,7 +44,6 @@ public class UserServiceImpl implements UserService {
     public boolean setNewPassword(NewPassword newPassword) {
         log.info("The setNewPassword method of setNewPassword is called");
         MyUserDetails userDetails = getUserDetails();
-        checkService.checkString(constants.MIN_LENGTH_PASSWORD, constants.MAX_LENGTH_PASSWORD, newPassword.getNewPassword());
         UserEntity userEntity = userDetails.getUser();
 
         if(encoder.matches(newPassword.getCurrentPassword(), userEntity.getPassword())) {
@@ -74,9 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UpdateUser updateUser(UpdateUser userPatch) {
         log.info("The updateUser method of setNewPassword is called");
-        checkService.checkString(constants.MIN_LENGTH_FIRSTNAME, constants.MAX_LENGTH_FIRSTNAME, userPatch.getFirstName());
-        checkService.checkString(constants.MIN_LENGTH_LASTNAME, constants.MAX_LENGTH_LASTNAME, userPatch.getLastName());
-        checkService.checkPhone(constants.PHONE_PATTERN, userPatch.getPhone());
+        checkService.checkPhone(userPatch.getPhone());
         MyUserDetails userDetails = getUserDetails();
         UserEntity userEntity = userDetails.getUser();
         updateUserMapper.toUserEntity(userPatch, userEntity);

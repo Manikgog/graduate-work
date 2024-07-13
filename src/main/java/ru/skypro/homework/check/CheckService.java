@@ -1,24 +1,13 @@
 package ru.skypro.homework.check;
 
 import org.springframework.stereotype.Component;
-import ru.skypro.homework.dto.Role;
-import ru.skypro.homework.exceptions.WrongLengthException;
 import ru.skypro.homework.exceptions.WrongNumberException;
-import ru.skypro.homework.exceptions.WrongRoleException;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
 public class CheckService {
-
-    public void checkString(int minLength, int maxLength, String string) {
-        if(string.length() < minLength){
-            throw new WrongLengthException("Слишком короткий текст: " + string);
-        }else if(string.length() > maxLength){
-            throw new WrongLengthException("Слишком длинный текст: " + string);
-        }
-    }
+    private final Pattern pat = Pattern.compile("\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}");
 
     public void checkNumber(int minLength, int maxLength, int number) {
         if(number < minLength){
@@ -28,21 +17,10 @@ public class CheckService {
         }
     }
 
-    public void checkPhone(String pattern, String phone){
-        Pattern pat = Pattern.compile(pattern);
+    public void checkPhone(String phone){
         Matcher mat = pat.matcher(phone);
         if(!mat.matches()){
             throw new WrongNumberException("Номер телефона не соответствует образцу");
         }
     }
-
-    public void checkRole(Role role){
-        for (var item : Role.values()){
-            if(item.equals(role)){
-                return;
-            }
-        }
-        throw new WrongRoleException("Указана несуществующая роль");
-    }
-
 }

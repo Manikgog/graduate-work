@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,11 +52,11 @@ public class AdsController {
                     schema = @Schema(implementation = Ad.class))),
 
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content())})
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Ad> createAd(@RequestPart(value="properties") @RequestBody CreateOrUpdateAd properties,
-                                       @RequestPart(value="image") @RequestParam MultipartFile image) {
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Ad> createAd(@RequestPart("properties") @Valid CreateOrUpdateAd ad,
+                                       @RequestPart("image") MultipartFile image) {
         log.info("The createAd method of AdsController is called");
-        return ResponseEntity.ok().body(adsService.createAd(properties, image));
+        return ResponseEntity.status(HttpStatus.CREATED).body(adsService.createAd(ad, image));
     }
 
 

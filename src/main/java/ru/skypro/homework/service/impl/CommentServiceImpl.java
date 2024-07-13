@@ -35,8 +35,8 @@ public class CommentServiceImpl implements CommentService {
      * @return Comments - DTO комментариев объявлений
      */
     @Override
-    public Comments get(Integer adId) {
-        List<Comment> comment = commentRepo.findByAdId((long) adId).orElseThrow(() -> {
+    public Comments get(Long adId) {
+        List<Comment> comment = commentRepo.findByAdId(adId).orElseThrow(() -> {
                     log.info("The get method of CommentServiceImpl is called");
                     return new EntityNotFoundException("Комментариев к объявлению с id=" + adId + " не найдено");
                 }).stream()
@@ -56,8 +56,8 @@ public class CommentServiceImpl implements CommentService {
      * @return Comment - DTO созданного комментария
      */
     @Override
-    public Comment create(Integer adId, CreateOrUpdateComment newComment) {
-        AdEntity adEntity = adRepo.findById((long) adId).orElseThrow(() -> {
+    public Comment create(Long adId, CreateOrUpdateComment newComment) {
+        AdEntity adEntity = adRepo.findById(adId).orElseThrow(() -> {
             log.info("The create method of CommentServiceImpl is called");
             return new EntityNotFoundException("Объявление id=" + adId + " не найдено");
         });
@@ -79,8 +79,8 @@ public class CommentServiceImpl implements CommentService {
      * @param commentId - идентификатор комментария
      */
     @Override
-    public void delete(Integer adId, Integer commentId) {
-        commentRepo.deleteById((long) commentId);
+    public void delete(Long adId, Long commentId) {
+        commentRepo.deleteById(commentId);
 
     }
 
@@ -93,8 +93,8 @@ public class CommentServiceImpl implements CommentService {
      * @return Comment - DTO обновленного комментария
      */
     @Override
-    public Comment update(Integer adId, Integer commentId, CreateOrUpdateComment newComment) {
-        CommentEntity commentEntity = commentRepo.findById((long) commentId).orElseThrow();
+    public Comment update(Long adId, Long commentId, CreateOrUpdateComment newComment) {
+        CommentEntity commentEntity = commentRepo.findById(commentId).orElseThrow();
         commentEntity.setText(newComment.getText());
         return commentMapper.CommentEntityToComment(commentRepo.save(commentEntity));
     }
