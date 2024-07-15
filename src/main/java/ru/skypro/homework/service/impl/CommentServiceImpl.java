@@ -36,15 +36,18 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public Comments get(Long adId) {
-        List<Comment> comment = commentRepo.findByAdId(adId).orElseThrow(() -> {
+        List<Comment> commentList = commentRepo.findByAdId(adId).orElseThrow(() -> {
                     log.info("The get method of CommentServiceImpl is called");
                     return new EntityNotFoundException("Комментариев к объявлению с id=" + adId + " не найдено");
                 }).stream()
                 .map(commentMapper::commentEntityToComment)
                 .toList();
+        for(Comment item : commentList){
+            item.setAuthorImage("/users/" + item.getAuthor() + "/image");
+        }
         Comments comments = new Comments();
-        comments.setCount(comment.size());
-        comments.setResults(comment);
+        comments.setCount(commentList.size());
+        comments.setResults(commentList);
         return comments;
     }
 

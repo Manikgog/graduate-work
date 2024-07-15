@@ -24,6 +24,7 @@ import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -108,10 +109,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateImage(MultipartFile image) {
         log.info("The updateImage method of setNewPassword is called");
-        UUID uuid = webSecurityConfig.getUuid();
         MyUserDetails userDetails = getUserDetails();
-        Path path = fileManager.uploadUserPhoto(uuid.toString(), image);
         UserEntity userEntity = userDetails.getUser();
+        String userName = userEntity.getEmail();
+        String oldImageFileName = userRepo.findByEmail(userName).orElseThrow(() -> new EntityNotFoundException("User with id=" + userName + " not found")).getImage();
+        if(oldImageFileName.isEmpty() || oldImageFileName.isBlank()){
+            UUID uuid = webSecurityConfig.getUuid();
+            Path path = fileManager.uploadUserPhoto(uuid.toString(), image);
+            String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
+            userEntity.setImage(fileName);
+            UserEntity userEntityFromDB = userRepo.save(userEntity);
+            User user = userMapper.toUser(userEntity);
+            user.setImage("/users/" + userEntityFromDB.getId() + "/image");
+            return user;
+        }
+        Path pathToOldImage = Paths.get(webSecurityConfig.getUserImagesFolder(), oldImageFileName);
+        Path path;
+        if(Files.exists(pathToOldImage)){
+            path = fileManager.uploadUserPhoto(oldImageFileName.substring(0, oldImageFileName.indexOf('.')), image);
+        }else {
+            UUID uuid = webSecurityConfig.getUuid();
+            path = fileManager.uploadUserPhoto(uuid.toString(), image);
+        }
         String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
         userEntity.setImage(fileName);
         UserEntity userEntityFromDB = userRepo.save(userEntity);
