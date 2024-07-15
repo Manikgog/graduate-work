@@ -24,6 +24,7 @@ import ru.skypro.homework.utils.FileManager;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -150,10 +151,27 @@ public class AdsServiceImpl implements AdsService{
             log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the updateImage method of AdsServiceImpl");
             return new EntityNotFoundException("Объявление id=" + id + " не найдено");
         });
-        MyUserDetails userDetails = userService.getUserDetails();
-        UUID uuid = webSecurityConfig.getUuid();
-        Path path = fileManager.uploadAdPhoto(uuid.toString(), image);
-        String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
+        String oldImageFileName = adEntity.getImage();
+        if(oldImageFileName.isEmpty() || oldImageFileName.isBlank()){
+            UUID uuid = webSecurityConfig.getUuid();
+            Path path = fileManager.uploadAdPhoto(uuid.toString(), image);
+            String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
+            adEntity.setImage(fileName);
+            AdEntity adFromDB = adRepo.save(adEntity);
+            adFromDB.setImage("/ads/" + adFromDB.getId() + "/image");
+            List<String> images = new ArrayList<>();
+            images.add(adFromDB.getImage());
+            return images;
+        }
+        Path pathToOldImage = Paths.get(webSecurityConfig.getAdImagesFolder(), oldImageFileName);
+        Path pathToNewImage;
+        if(Files.exists(pathToOldImage)){
+            pathToNewImage = fileManager.uploadAdPhoto(oldImageFileName.substring(0, oldImageFileName.indexOf('.')), image);
+        }else {
+            UUID uuid = webSecurityConfig.getUuid();
+            pathToNewImage = fileManager.uploadAdPhoto(uuid.toString(), image);
+        }
+        String fileName = pathToNewImage.toString().substring(pathToNewImage.toString().lastIndexOf("\\") + 1);
         adEntity.setImage(fileName);
         AdEntity adFromDB = adRepo.save(adEntity);
         adFromDB.setImage("/ads/" + adFromDB.getId() + "/image");
