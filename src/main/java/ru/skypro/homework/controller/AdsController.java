@@ -20,9 +20,7 @@ import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.service.AdsService;
-
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 @Slf4j
@@ -93,7 +91,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not found")})
     @PreAuthorize("@checkAccessService.isAdminOrOwnerAd(#id, authentication)")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAds(@PathVariable Long id) {
+    public ResponseEntity<?> deleteAds(@PathVariable Long id) {
         log.info("The deleteAds method of AdsController is called");
         adsService.deleteAd(id);
         return ResponseEntity.ok().build();
@@ -169,7 +167,8 @@ public class AdsController {
             }
     )
     @GetMapping(value = "/{id}/image")
-    public ResponseEntity<URL> getAdImage(@PathVariable Long id, HttpServletResponse response) throws MalformedURLException {
-        return ResponseEntity.ok(adsService.getImage(id, response));
+    public ResponseEntity<?> getAdImage(@PathVariable Long id, HttpServletResponse response) throws MalformedURLException {
+        adsService.getImage(id, response);
+        return ResponseEntity.ok().build();
     }
 }

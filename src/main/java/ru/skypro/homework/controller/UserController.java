@@ -15,9 +15,7 @@ import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
 import ru.skypro.homework.service.UserService;
-
 import java.net.MalformedURLException;
-import java.net.URL;
 
 @Slf4j
 @RequestMapping("/users")
@@ -122,8 +120,9 @@ public class UserController {
             }
     )
     @GetMapping(value = "/{id}/image")
-    public ResponseEntity<URL> getUserPhoto(@PathVariable Long id, HttpServletResponse response) throws MalformedURLException {
-        return ResponseEntity.ok(userService.getImage(id, response));
+    public ResponseEntity<?> getUserPhoto(@PathVariable Long id, HttpServletResponse response) throws MalformedURLException {
+        userService.getImage(id, response);
+        return ResponseEntity.ok().build();
     }
 
 

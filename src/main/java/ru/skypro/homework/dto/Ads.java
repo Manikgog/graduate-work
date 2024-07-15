@@ -15,7 +15,7 @@ public class Ads {
     @JsonProperty("count")
     @Schema(description = "общее количество объявлений")
     int count;
-    @JsonProperty("result")
+    @JsonProperty("results")
     List<Ad> results;
 
     public Ads addResultsItem(Ad resultsItem) {
