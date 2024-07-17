@@ -112,13 +112,14 @@ public class UserServiceImpl implements UserService {
         MyUserDetails userDetails = getUserDetails();
         UserEntity userEntity = userDetails.getUser();
         String userName = userEntity.getEmail();
-        String oldImageFileName = userRepo.findByEmail(userName).orElseThrow(() -> new EntityNotFoundException("User with id=" + userName + " not found")).getImage();
-        if(oldImageFileName.isEmpty() || oldImageFileName.isBlank()){
+        UserEntity userEntityFromDB = userRepo.findByEmail(userName).orElseThrow(() -> new EntityNotFoundException("User with id=" + userName + " not found"));
+        String oldImageFileName = userEntityFromDB.getImage();
+        if(oldImageFileName == null || oldImageFileName.isEmpty() || oldImageFileName.isBlank()){
             UUID uuid = webSecurityConfig.getUuid();
             Path path = fileManager.uploadUserPhoto(uuid.toString(), image);
             String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
             userEntity.setImage(fileName);
-            UserEntity userEntityFromDB = userRepo.save(userEntity);
+            userEntityFromDB = userRepo.save(userEntity);
             User user = userMapper.toUser(userEntity);
             user.setImage("/users/" + userEntityFromDB.getId() + "/image");
             return user;
@@ -133,7 +134,7 @@ public class UserServiceImpl implements UserService {
         }
         String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
         userEntity.setImage(fileName);
-        UserEntity userEntityFromDB = userRepo.save(userEntity);
+        userEntityFromDB = userRepo.save(userEntity);
         User user = userMapper.toUser(userEntity);
         user.setImage("/users/" + userEntityFromDB.getId() + "/image");
         return user;

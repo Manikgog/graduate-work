@@ -13,15 +13,16 @@ import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.entity.AdEntity;
+import ru.skypro.homework.entity.CommentEntity;
 import ru.skypro.homework.exceptions.EntityNotFoundException;
 import ru.skypro.homework.mapper.AdEntityToExtendedAdMapper;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.mapper.AdToAdEntity;
 import ru.skypro.homework.repository.AdRepo;
+import ru.skypro.homework.repository.CommentRepo;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -40,6 +41,7 @@ import static ru.skypro.homework.constants.Constants.MIN_PRICE;
 public class AdsServiceImpl implements AdsService{
     private final AdMapper adMapper;
     private final AdRepo adRepo;
+    private final CommentRepo commentRepo;
     private final UserService userService;
     private final FileManager fileManager;
     private final CheckService checkService;
@@ -141,6 +143,8 @@ public class AdsServiceImpl implements AdsService{
     @Override
     public void deleteAd(Long id) {
         log.info("The deleteAd method of AdsServiceImpl is called");
+        List<CommentEntity> commentEntities = commentRepo.findByAdId(id);
+        commentRepo.deleteAll(commentEntities);
         adRepo.deleteById(id);
     }
 
@@ -151,6 +155,7 @@ public class AdsServiceImpl implements AdsService{
             log.error("An EntityNotFoundException " + "(Ad c id=" + id + " not found)" + "exception was thrown when calling the updateImage method of AdsServiceImpl");
             return new EntityNotFoundException("Объявление id=" + id + " не найдено");
         });
+
         String oldImageFileName = adEntity.getImage();
         if(oldImageFileName.isEmpty() || oldImageFileName.isBlank()){
             UUID uuid = webSecurityConfig.getUuid();

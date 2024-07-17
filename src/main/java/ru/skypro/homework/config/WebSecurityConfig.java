@@ -17,7 +17,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class WebSecurityConfig {
     @Getter
     @Value("${path.to.userImages.folder}")
@@ -45,7 +45,8 @@ public class WebSecurityConfig {
             "/register",
             "/ads",
             "/ads/{id}/image",
-            "/ads/{id}/comments"
+            "/ads/{id}/comments",
+            "/users/{id}/image"
     };
 
     @Bean
