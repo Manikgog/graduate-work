@@ -23,7 +23,6 @@ import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.UserService;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -86,6 +85,11 @@ public class UserControllerTestRestTemplateTest {
 
     @AfterEach
     public void afterEach() {
+        List<String> fileNames = userRepo.findAll().stream().filter(u -> u.getImage() != null).map(UserEntity::getImage).toList();
+        for (int i = 0; i < fileNames.size(); i++) {
+            Path filePath = Paths.get(userImagesFolder, fileNames.get(i));
+            filePath.toFile().deleteOnExit();
+        }
         removeUsers();
         userRepo.deleteAll();
     }
@@ -143,10 +147,11 @@ public class UserControllerTestRestTemplateTest {
                 String.class
         );
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-       /* UserEntity userEntityWithNewPassword = userRepo.findByEmail(userEntity.getEmail()).orElse(null);
+        UserEntity userEntityWithNewPassword = userRepo.findByEmail(userEntity.getEmail()).orElse(null);
         String newEncodedPassword = userEntityWithNewPassword.getPassword();
-        String passwordEncoded = encoder.encode("password");
-        Assertions.assertThat(newEncodedPassword).isEqualTo(passwordEncoded);*/
+
+        boolean equals = encoder.matches("password", newEncodedPassword);
+        Assertions.assertThat(equals).isEqualTo(true);
     }
 
     @Test
@@ -165,7 +170,6 @@ public class UserControllerTestRestTemplateTest {
         UserEntity userEntity = userRepo.findAll().stream().findAny().get();
 
         String notEndodedPassword = users.stream().filter(u -> u.getUsername().equals(userEntity.getEmail())).findFirst().get().getPassword();
-
 
         ResponseEntity<User> response = restTemplate.withBasicAuth(userEntity.getEmail(), notEndodedPassword).getForEntity(
                 "http://localhost:" + port + "/users/me",
@@ -208,7 +212,7 @@ public class UserControllerTestRestTemplateTest {
     }
 
     @Test
-    public void updateImage_positiveTest() {
+    public void uploadImage_positiveTest() {
         UserEntity userEntity = userRepo.findAll().stream().findAny().get();
         String userName = userEntity.getEmail();
         String notEndodedPassword = users.stream().filter(u -> u.getUsername().equals(userEntity.getEmail())).findFirst().get().getPassword();
@@ -230,6 +234,24 @@ public class UserControllerTestRestTemplateTest {
         Assertions.assertThat(userRepo.findByEmail(userName).get().getImage()).isNotEmpty();
     }
 
+    @Test
+    public void getImage_positiveTest() {
+        UserEntity userEntity = userRepo.findAll().stream().findAny().get();
+        String userName = userEntity.getEmail();
+        String notEndodedPassword = users.stream().filter(u -> u.getUsername().equals(userEntity.getEmail())).findFirst().get().getPassword();
+
+        uploadImage(userName, notEndodedPassword);
+        UserEntity userEntityWithImage = userRepo.findByEmail(userEntity.getEmail()).get();
+        ResponseEntity<String> responseEntity = restTemplate.withBasicAuth(userName, notEndodedPassword).exchange(
+                "http://localhost:" + port + "/users/{id}/image",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                String.class,
+                Map.of("id", userEntity.getId())
+        );
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
 
     private void uploadImage(String username, String password){
         Path filePath = Paths.get(userImagesFolder, "1.jpg");
@@ -239,8 +261,9 @@ public class UserControllerTestRestTemplateTest {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("image", fileSystemResource);
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-        restTemplate.withBasicAuth(username, password).postForEntity(
+        ResponseEntity<String> response = restTemplate.withBasicAuth(username, password).exchange(
                 "http://localhost:" + port + "/users/me/image",
+                HttpMethod.PATCH,
                 requestEntity,
                 String.class
         );

@@ -102,7 +102,7 @@ public class UserController {
                     content = @Content())
     })
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateImage(@RequestParam MultipartFile image) {
+    public ResponseEntity<?> uploadImage(@RequestParam MultipartFile image) {
         log.info("The updateImage method of UserController is called");
         userService.updateImage(image);
         return ResponseEntity.ok().build();
@@ -120,7 +120,7 @@ public class UserController {
             }
     )
     @GetMapping(value = "/{id}/image")
-    public ResponseEntity<?> getUserPhoto(@PathVariable Long id, HttpServletResponse response) throws MalformedURLException {
+    public ResponseEntity<?> getImage(@PathVariable Long id, HttpServletResponse response) throws MalformedURLException {
         userService.getImage(id, response);
         return ResponseEntity.ok().build();
     }
