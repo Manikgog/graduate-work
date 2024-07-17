@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userDetails.getUser();
         String userName = userEntity.getEmail();
         String oldImageFileName = userRepo.findByEmail(userName).orElseThrow(() -> new EntityNotFoundException("User with id=" + userName + " not found")).getImage();
-        if(oldImageFileName.isEmpty() || oldImageFileName.isBlank()){
+        if(oldImageFileName == null || oldImageFileName.isEmpty() || oldImageFileName.isBlank()){
             UUID uuid = webSecurityConfig.getUuid();
             Path path = fileManager.uploadUserPhoto(uuid.toString(), image);
             String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
