@@ -1,17 +1,19 @@
 package ru.skypro.homework;
 
 import net.datafaker.Faker;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.skypro.homework.config.WebSecurityConfig;
 import ru.skypro.homework.controller.AuthController;
 import ru.skypro.homework.dto.NewPassword;
@@ -28,7 +30,6 @@ import java.util.regex.Pattern;
 
 import static ru.skypro.homework.constants.Constants.PHONE_PATTERN;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerTestRestTemplateTest {
     @LocalServerPort
@@ -54,6 +55,8 @@ public class UserControllerTestRestTemplateTest {
 
     @Autowired
     private AuthController authController;
+
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     private final Pattern pat = Pattern.compile(PHONE_PATTERN);
 
@@ -118,17 +121,24 @@ public class UserControllerTestRestTemplateTest {
     }
 
     @Test
-    public void setPassword_positiveTest(){
+    public void setPassword_positiveTest() throws Exception {
         UserEntity userEntity = userRepo.findAll().stream().findAny().get();
         NewPassword newPassword = new NewPassword();
         newPassword.setNewPassword("password");
         newPassword.setCurrentPassword(users.stream().filter(u -> u.getUsername().equals(userEntity.getEmail())).findFirst().get().getPassword());
 
-        ResponseEntity<String> response = restTemplate.withBasicAuth(userEntity.getEmail(), userEntity.getPassword()).postForEntity(
-                "http://localhost:" + port + "/set_password",
+
+       ResponseEntity<String> response = restTemplate.withBasicAuth(userEntity.getEmail(), newPassword.getCurrentPassword()).postForEntity(
+                "http://localhost:" + port + "/users/set_password",
                 newPassword,
                 String.class
         );
-        System.out.println(response.getStatusCode());
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        UserEntity userEntityWithNewPassword = userRepo.findByEmail(userEntity.getEmail()).orElse(null);
+        String newEncodedPassword = userEntityWithNewPassword.getPassword();
+        String passwordEncoded = encoder.encode("password");
+        Assertions.assertThat(newEncodedPassword).isEqualTo(passwordEncoded);
     }
+
+
 }

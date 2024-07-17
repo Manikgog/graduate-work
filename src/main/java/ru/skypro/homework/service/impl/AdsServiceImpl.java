@@ -21,7 +21,6 @@ import ru.skypro.homework.repository.AdRepo;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
