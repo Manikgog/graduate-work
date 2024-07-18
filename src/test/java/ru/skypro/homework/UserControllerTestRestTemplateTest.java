@@ -16,18 +16,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import ru.skypro.homework.config.WebSecurityConfig;
 import ru.skypro.homework.controller.AuthController;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepo;
-import ru.skypro.homework.service.UserService;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,23 +40,11 @@ public class UserControllerTestRestTemplateTest {
     @LocalServerPort
     private int port;
 
-    @Value("test_user_images")
-    private String userImages;
-
-    @Value("test_ad_images")
-    private String adImages;
-
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Autowired
     private UserRepo userRepo;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private WebSecurityConfig webSecurityConfig;
 
     @Autowired
     private AuthController authController;
@@ -73,21 +60,21 @@ public class UserControllerTestRestTemplateTest {
 
     private final static int NUMBER_OF_USERS = 5;
 
-    private List<Register> users = new ArrayList<>();
+    private final List<Register> users = new ArrayList<>();
 
     @BeforeEach
     public void beforeEach() {
         createUsers();
-        for (int i = 0; i < users.size(); i++) {
-            authController.register(users.get(i));
+        for (Register user : users) {
+            authController.register(user);
         }
     }
 
     @AfterEach
     public void afterEach() {
-        List<String> fileNames = userRepo.findAll().stream().filter(u -> u.getImage() != null).map(UserEntity::getImage).toList();
-        for (int i = 0; i < fileNames.size(); i++) {
-            Path filePath = Paths.get(userImagesFolder, fileNames.get(i));
+        List<String> fileNames = userRepo.findAll().stream().map(UserEntity::getImage).filter(Objects::nonNull).toList();
+        for (String fileName : fileNames) {
+            Path filePath = Paths.get(userImagesFolder, fileName);
             filePath.toFile().deleteOnExit();
         }
         removeUsers();
@@ -95,12 +82,10 @@ public class UserControllerTestRestTemplateTest {
     }
 
     private void removeUsers(){
-        for (int i = 0; i < users.size(); i++) {
-            users.remove(i);
-        }
+        users.clear();
     }
 
-    private List<Register> createUsers() {
+    private void createUsers() {
         for (int i = 0; i < NUMBER_OF_USERS; i++) {
             Register register = new Register();
             register.setFirstName(faker.name().firstName());
@@ -115,7 +100,6 @@ public class UserControllerTestRestTemplateTest {
             }
             users.add(register);
         }
-        return users;
     }
 
     private String getPhoneNumber(){
@@ -123,7 +107,7 @@ public class UserControllerTestRestTemplateTest {
         while (true){
             if(phoneNumber.contains("(")) {
                 String subStr =  phoneNumber.substring(0, phoneNumber.length() - 2);
-                String subStr2 = phoneNumber.substring(phoneNumber.length() - 2, phoneNumber.length());
+                String subStr2 = phoneNumber.substring(phoneNumber.length() - 2);
                 phoneNumber = "+7 " + subStr + "-" + subStr2;
                 Matcher mat = pat.matcher(phoneNumber);
                 if (mat.matches()) {
