@@ -11,6 +11,20 @@ import ru.skypro.homework.dto.Role;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserEntity {
+
+    public UserEntity() {}
+
+    public UserEntity(UserEntity userEntity) {
+        this.id = userEntity.id;
+        this.email = userEntity.email;
+        this.firstName = userEntity.firstName;
+        this.lastName = userEntity.lastName;
+        this.password = userEntity.password;
+        this.phone = userEntity.phone;
+        this.image = userEntity.image;
+        this.role = userEntity.role;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -36,4 +50,5 @@ public class UserEntity {
 
     @Column(name = "password", nullable = false)
     String password;
+
 }

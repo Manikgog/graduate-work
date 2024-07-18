@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Comment {
     @Schema(description = "id автора комментария")
-    int author;
+    long author;
     @Schema(description = "ссылка на аватар автора комментария")
     String authorImage;
     @Schema(description = "имя создателя комментария")
@@ -17,7 +17,7 @@ public class Comment {
     @Schema(description = "дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970")
     long createdAt;
     @Schema(description = "id комментария")
-    int pk;
+    long pk;
     @Schema(description = "текст комментария")
     String text;
 }

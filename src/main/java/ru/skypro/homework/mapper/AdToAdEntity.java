@@ -12,7 +12,7 @@ public class AdToAdEntity {
         adEntity.setId(ad.getPk());
         adEntity.setAuthor(userEntity);
         adEntity.setImage(ad.getImage());
-        adEntity.setPrice(adEntity.getPrice());
+        adEntity.setPrice(ad.getPrice());
         adEntity.setTitle(ad.getTitle());
     }
 }
