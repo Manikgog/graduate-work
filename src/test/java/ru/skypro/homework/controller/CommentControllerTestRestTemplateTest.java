@@ -23,9 +23,6 @@ import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.repository.AdRepo;
 import ru.skypro.homework.repository.CommentRepo;
 import ru.skypro.homework.repository.UserRepo;
-import ru.skypro.homework.service.AdsService;
-import ru.skypro.homework.service.CommentService;
-import ru.skypro.homework.service.UserService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -66,7 +63,7 @@ class CommentControllerTestRestTemplateTest {
     private final Pattern pat = Pattern.compile(PHONE_PATTERN);
     private final Faker faker = new Faker();
     private final static int NUMBER_OF_COMMENTS = 3;
-    private List<CommentEntity> commentEntities = new ArrayList<>();
+    private final List<CommentEntity> commentEntities = new ArrayList<>();
     UserEntity userEntity = new UserEntity();
     private Register register = new Register();
 
