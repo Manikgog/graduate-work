@@ -225,7 +225,6 @@ public class UserControllerTestRestTemplateTest {
         String notEndodedPassword = users.stream().filter(u -> u.getUsername().equals(userEntity.getEmail())).findFirst().get().getPassword();
 
         uploadImage(userName, notEndodedPassword);
-        UserEntity userEntityWithImage = userRepo.findByEmail(userEntity.getEmail()).get();
         ResponseEntity<String> responseEntity = restTemplate.withBasicAuth(userName, notEndodedPassword).exchange(
                 "http://localhost:" + port + "/users/{id}/image",
                 HttpMethod.GET,
