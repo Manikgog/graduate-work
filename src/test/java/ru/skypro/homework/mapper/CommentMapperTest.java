@@ -1,4 +1,4 @@
-package ru.skypro.homework;
+package ru.skypro.homework.mapper;
 
 import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
@@ -8,7 +8,6 @@ import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.CommentEntity;
 import ru.skypro.homework.entity.UserEntity;
-import ru.skypro.homework.mapper.CommentMapper;
 
 public class CommentMapperTest {
 

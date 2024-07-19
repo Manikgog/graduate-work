@@ -1,4 +1,4 @@
-package ru.skypro.homework;
+package ru.skypro.homework.mapper;
 
 import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.dto.User;
 import ru.skypro.homework.entity.UserEntity;
-import ru.skypro.homework.mapper.UserMapper;
 
 public class UserMapperTest {
 

@@ -1,4 +1,4 @@
-package ru.skypro.homework;
+package ru.skypro.homework.controller;
 
 import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
@@ -11,7 +11,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import ru.skypro.homework.controller.AuthController;
 import ru.skypro.homework.dto.Login;
 import ru.skypro.homework.dto.Register;
 import ru.skypro.homework.dto.Role;

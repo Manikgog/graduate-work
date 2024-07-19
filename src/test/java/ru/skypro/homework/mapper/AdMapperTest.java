@@ -1,4 +1,4 @@
-package ru.skypro.homework;
+package ru.skypro.homework.mapper;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -7,7 +7,6 @@ import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.UserEntity;
-import ru.skypro.homework.mapper.AdMapper;
 
 
 public class AdMapperTest {
