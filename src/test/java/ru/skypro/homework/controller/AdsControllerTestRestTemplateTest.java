@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,6 +87,11 @@ class AdsControllerTestRestTemplateTest {
     void tearDown() {
         listAd.clear();
         listUser.clear();
+        List<String> fileNames = adRepo.findAll().stream().map(AdEntity::getImage).filter(Objects::nonNull).toList();
+        for (String fileName : fileNames) {
+            Path filePath = Paths.get(adImagesFolder, fileName);
+            filePath.toFile().deleteOnExit();
+        }
         adRepo.deleteAll();
         userRepo.deleteAll();
     }
