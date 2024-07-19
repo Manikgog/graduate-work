@@ -22,24 +22,16 @@ import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.AdEntityToExtendedAdMapper;
 import ru.skypro.homework.mapper.AdMapper;
-import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.AdRepo;
 import ru.skypro.homework.repository.UserRepo;
-import ru.skypro.homework.service.AuthService;
-import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.service.impl.AdsServiceImpl;
-import ru.skypro.homework.service.impl.UserServiceImpl;
-
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.skypro.homework.constants.Constants.PHONE_PATTERN;
@@ -101,7 +93,7 @@ class AdsControllerTestRestTemplateTest {
     private void createAdEntity() {
         for (int i = 0; i < COUNT_AD; i++) {
             AdEntity adEntity = new AdEntity();
-            adEntity.setAuthor(listUser.get(faker.random().nextInt(0, listUser.size()-1)));
+            adEntity.setAuthor(listUser.get(faker.random().nextInt(0, listUser.size() - 1)));
             adEntity.setTitle(faker.name().firstName());
             adEntity.setImage("/здесь должен быть путь к картинке/");
             adEntity.setPrice(faker.number().numberBetween(1, 100));
@@ -119,21 +111,22 @@ class AdsControllerTestRestTemplateTest {
             userEntity.setEmail(faker.internet().emailAddress());
             userEntity.setPassword("password");
             userEntity.setPhone(getPhoneNumber());
-            if(i == COUNT_USER-1){
+            if (i == COUNT_USER - 1) {
                 userEntity.setRole(Role.ADMIN);
-            }else {
+            } else {
                 userEntity.setRole(Role.USER);
             }
             listUser.add(userEntity);
-           userEntity.setPassword(encoder.encode(userEntity.getPassword()));
+            userEntity.setPassword(encoder.encode(userEntity.getPassword()));
             userRepo.save(userEntity);
         }
     }
-    private String getPhoneNumber(){
+
+    private String getPhoneNumber() {
         String phoneNumber = faker.phoneNumber().cellPhone();
-        while (true){
-            if(phoneNumber.contains("(")) {
-                String subStr =  phoneNumber.substring(0, phoneNumber.length() - 2);
+        while (true) {
+            if (phoneNumber.contains("(")) {
+                String subStr = phoneNumber.substring(0, phoneNumber.length() - 2);
                 String subStr2 = phoneNumber.substring(phoneNumber.length() - 2, phoneNumber.length());
                 phoneNumber = "+7 " + subStr + "-" + subStr2;
                 Matcher mat = pattern.matcher(phoneNumber);
@@ -163,21 +156,21 @@ class AdsControllerTestRestTemplateTest {
 
     @Test
     void createAdPositiveTest() {
-        UserEntity userEntity = listUser.get(faker.random().nextInt(0, listUser.size()-1));
+        UserEntity userEntity = listUser.get(faker.random().nextInt(0, listUser.size() - 1));
         Path filePath = Paths.get(adImages, "2.jpg");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.add("Content_Type", MediaType.APPLICATION_JSON_VALUE);
         FileSystemResource fileSystemResource = new FileSystemResource(filePath);
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("image",fileSystemResource);
+        body.add("image", fileSystemResource);
         CreateOrUpdateAd createOrUpdateAd = new CreateOrUpdateAd();
         createOrUpdateAd.setDescription("Описание какого то товара");
-        createOrUpdateAd.setPrice(faker.random().nextInt(0,100));
+        createOrUpdateAd.setPrice(faker.random().nextInt(0, 100));
         createOrUpdateAd.setTitle("Какой то товар");
-        body.add("properties",createOrUpdateAd);
+        body.add("properties", createOrUpdateAd);
 
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body,headers);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
         ResponseEntity<Ad> createAd = restTemplate.withBasicAuth(userEntity.getEmail(), "password")
                 .postForEntity(buildUrl("/ads"),
                         requestEntity,
@@ -192,7 +185,7 @@ class AdsControllerTestRestTemplateTest {
 
     @Test
     void getAdsExtendedPositiveTest() {
-        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size()-1));
+        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size() - 1));
         UserEntity user = ad.getAuthor();
         ExtendedAd extendedAd = adEntityToExtendedAdMapper.perform(ad);
         ResponseEntity<ExtendedAd> getAdsExtended = restTemplate.withBasicAuth(user.getEmail(), "password")
@@ -203,9 +196,10 @@ class AdsControllerTestRestTemplateTest {
         assertThat(getAd).isNotNull();
         assertThat(getAd).usingRecursiveComparison().ignoringFields("image").isEqualTo(extendedAd);
     }
+
     @Test
     void getAdsExtendedNegative_IfAdNotFoundTest() {
-        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size()-1));
+        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size() - 1));
         UserEntity user = ad.getAuthor();
         ExtendedAd extendedAd = adEntityToExtendedAdMapper.perform(ad);
         ResponseEntity<String> getAdsExtended = restTemplate.withBasicAuth(user.getEmail(), "password")
@@ -216,19 +210,21 @@ class AdsControllerTestRestTemplateTest {
 
     @Test
     void deleteAdsPositiveTest() {
-        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size()-1));
+        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size() - 1));
         ResponseEntity<Void> removeEntity = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(), "password")
-                .exchange(buildUrl("/ads/" + ad.getId()),
+                .exchange(buildUrl("/ads/{id}"),
                         HttpMethod.DELETE,
                         null,
-                        Void.class);
+                        Void.class,
+                        Map.of("id", ad.getId()));
         assertThat(removeEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         List<AdEntity> expected = adRepo.findAll();
-        assertThat(expected).size().isEqualTo(listAd.size()-1);
+        assertThat(expected).size().isEqualTo(listAd.size() - 1);
     }
+
     @Test
     void deleteAdsNegativeTest() {
-        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size()-1));
+        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size() - 1));
         ResponseEntity<Void> removeEntity = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(), "password")
                 .exchange(buildUrl("/ads" + ad.getId()),
                         HttpMethod.DELETE,
@@ -236,9 +232,10 @@ class AdsControllerTestRestTemplateTest {
                         Void.class);
         assertThat(removeEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
+
     @Test
     void deleteAdsNegativeTest_IfUserUnauthorizedTest() {
-        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size()-1));
+        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size() - 1));
         ResponseEntity<Void> removeEntity = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(), "password1")
                 .exchange(buildUrl("/ads/" + ad.getId()),
                         HttpMethod.DELETE,
@@ -246,104 +243,111 @@ class AdsControllerTestRestTemplateTest {
                         Void.class);
         assertThat(removeEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
+
     @Test
     void deleteAdsNegativeTest_IfAdNotFoundTest() {
-        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size()-1));
+        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size() - 1));
         ResponseEntity<Void> removeEntity = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(), "password")
-                .exchange(buildUrl("/ads/-1"),
+                .exchange(buildUrl("/ads/{id}"),
                         HttpMethod.DELETE,
                         null,
-                        Void.class);
+                        Void.class,
+                        Map.of("id", -1));
         assertThat(removeEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     void updateAdsPositiveTest() {
-        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size()-1));
+        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size() - 1));
         CreateOrUpdateAd createOrUpdateAd = new CreateOrUpdateAd();
         createOrUpdateAd.setDescription("Описание какого то товара");
-        createOrUpdateAd.setPrice(faker.random().nextInt(0,100));
+        createOrUpdateAd.setPrice(faker.random().nextInt(0, 100));
         createOrUpdateAd.setTitle("Какой то товар");
         ad.setDescription(createOrUpdateAd.getDescription());
         ad.setPrice(createOrUpdateAd.getPrice());
         ad.setTitle(createOrUpdateAd.getTitle());
         Ad expectedAd = adMapper.adEntityToAd(ad);
         HttpEntity<CreateOrUpdateAd> entityAd = new HttpEntity<>(createOrUpdateAd);
-        ResponseEntity<Ad> updateAd = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(),"password")
-                .exchange(buildUrl("/ads/" + ad.getId()),
-                HttpMethod.PATCH,
-                entityAd,
-                Ad.class);
+        ResponseEntity<Ad> updateAd = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(), "password")
+                .exchange(buildUrl("/ads/{id}"),
+                        HttpMethod.PATCH,
+                        entityAd,
+                        Ad.class,
+                        Map.of("id", ad.getId()));
         assertThat(updateAd.getStatusCode()).isEqualTo(HttpStatus.OK);
         Ad updatedAd = updateAd.getBody();
         assertThat(updatedAd).isNotNull();
         assertThat(updatedAd).usingRecursiveComparison().ignoringFields("image").isEqualTo(expectedAd);
     }
+
     @Test
     void updateAdsNegative_IfUserUnauthorizedTest() {
-        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size()-1));
+        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size() - 1));
         CreateOrUpdateAd createOrUpdateAd = new CreateOrUpdateAd();
         createOrUpdateAd.setDescription("Описание какого то товара");
-        createOrUpdateAd.setPrice(faker.random().nextInt(0,100));
+        createOrUpdateAd.setPrice(faker.random().nextInt(0, 100));
         createOrUpdateAd.setTitle("Какой то товар");
         ad.setDescription(createOrUpdateAd.getDescription());
         ad.setPrice(createOrUpdateAd.getPrice());
         ad.setTitle(createOrUpdateAd.getTitle());
         HttpEntity<CreateOrUpdateAd> entityAd = new HttpEntity<>(createOrUpdateAd);
-        ResponseEntity<Ad> updateAd = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(),"password1")
+        ResponseEntity<Ad> updateAd = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(), "password1")
                 .exchange(buildUrl("/ads/" + ad.getId()),
                         HttpMethod.PATCH,
                         entityAd,
                         Ad.class);
         assertThat(updateAd.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
+
     @Test
     void updateAdsNegative_IfForbiddenTest() {
-        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size()-1));
+        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size() - 1));
         CreateOrUpdateAd createOrUpdateAd = new CreateOrUpdateAd();
         createOrUpdateAd.setDescription("Описание какого то товара");
-        createOrUpdateAd.setPrice(faker.random().nextInt(0,100));
+        createOrUpdateAd.setPrice(faker.random().nextInt(0, 100));
         createOrUpdateAd.setTitle("Какой то товар");
         ad.setDescription(createOrUpdateAd.getDescription());
         ad.setPrice(createOrUpdateAd.getPrice());
         ad.setTitle(createOrUpdateAd.getTitle());
         HttpEntity<CreateOrUpdateAd> entityAd = new HttpEntity<>(createOrUpdateAd);
-        ResponseEntity<Ad> updateAd = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(),"password")
+        ResponseEntity<Ad> updateAd = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(), "password")
                 .exchange(buildUrl("/ads" + ad.getId()),
                         HttpMethod.PATCH,
                         entityAd,
                         Ad.class);
         assertThat(updateAd.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
+
     @Test
     void updateAdsNegativeTest_IfAdNotFoundTest() {
-        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size()-1));
+        AdEntity ad = listAd.get(faker.random().nextInt(listAd.size() - 1));
         CreateOrUpdateAd createOrUpdateAd = new CreateOrUpdateAd();
         createOrUpdateAd.setDescription("Описание какого то товара");
-        createOrUpdateAd.setPrice(faker.random().nextInt(0,100));
+        createOrUpdateAd.setPrice(faker.random().nextInt(0, 100));
         createOrUpdateAd.setTitle("Какой то товар");
         ad.setDescription(createOrUpdateAd.getDescription());
         ad.setPrice(createOrUpdateAd.getPrice());
         ad.setTitle(createOrUpdateAd.getTitle());
         HttpEntity<CreateOrUpdateAd> entityAd = new HttpEntity<>(createOrUpdateAd);
-        ResponseEntity<String> updateAd = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(),"password")
-                .exchange(buildUrl("/ads/-1"),
+        ResponseEntity<String> updateAd = testRestTemplate.withBasicAuth(ad.getAuthor().getEmail(), "password")
+                .exchange(buildUrl("/ads/{id}"),
                         HttpMethod.PATCH,
                         entityAd,
-                        String.class);
+                        String.class,
+                        Map.of("id", -1));
         assertThat(updateAd.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     void getAdsAuthorizedUserPositiveTest() {
-        UserEntity user = listUser.get(faker.random().nextInt(listUser.size()-1));
+        UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
         List<Ad> ad = listAd.stream().filter(adEntity -> adEntity.getAuthor().getEmail().equals(user.getEmail())).map(adMapper::adEntityToAd).toList();
 
         Ads adsExpected = new Ads();
         adsExpected.setCount(ad.size());
         adsExpected.setResults(ad);
 
-        ResponseEntity<Ads> adFormDb = testRestTemplate.withBasicAuth(user.getEmail(),"password")
+        ResponseEntity<Ads> adFormDb = testRestTemplate.withBasicAuth(user.getEmail(), "password")
                 .getForEntity(buildUrl("/ads/me"), Ads.class);
         assertThat(adFormDb.getStatusCode()).isEqualTo(HttpStatus.OK);
         Ads get = adFormDb.getBody();
@@ -351,16 +355,17 @@ class AdsControllerTestRestTemplateTest {
         assertThat(get.getCount()).isEqualTo(adsExpected.getCount());
         assertThat(get.getResults()).usingRecursiveComparison().ignoringFields("image").isEqualTo(ad);
     }
+
     @Test
     void getAdsAuthorizedUserNegativeTest_IfUserUnauthorizedTest() {
-        UserEntity user = listUser.get(faker.random().nextInt(listUser.size()-1));
+        UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
         List<Ad> ad = listAd.stream().filter(adEntity -> adEntity.getAuthor().getEmail().equals(user.getEmail())).map(adMapper::adEntityToAd).toList();
 
         Ads adsExpected = new Ads();
         adsExpected.setCount(ad.size());
         adsExpected.setResults(ad);
 
-        ResponseEntity<Ads> adFormDb = testRestTemplate.withBasicAuth(user.getEmail(),"password1")
+        ResponseEntity<Ads> adFormDb = testRestTemplate.withBasicAuth(user.getEmail(), "password1")
                 .getForEntity(buildUrl("/ads/me"), Ads.class);
         assertThat(adFormDb.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -368,8 +373,8 @@ class AdsControllerTestRestTemplateTest {
 
     @Test
     void updateImagePositiveTest() {
-        UserEntity user = listUser.get(faker.random().nextInt(listUser.size()-1));
-        AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().equals(user)).findFirst().get();
+        UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
+        AdEntity adEntity = adRepo.findAll().stream().filter(adEntity1 -> adEntity1.getAuthor().getEmail().equals(user.getEmail())).findFirst().get();
         Path filPath = Paths.get(adImages, "3.jpg");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -381,15 +386,18 @@ class AdsControllerTestRestTemplateTest {
                 buildUrl("/ads/{id}/image"),
                 HttpMethod.PATCH,
                 request,
-                new ParameterizedTypeReference<>() {},
-                Map.of("id",adEntity.getId())
+                new ParameterizedTypeReference<>() {
+                },
+                Map.of("id", adEntity.getId())
         );
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+
     @Test
     void updateImageNegativeTest_IfUserUnauthorizedTest() {
-        UserEntity user = listUser.get(faker.random().nextInt(listUser.size()-1));
+        UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
         AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().equals(user)).findFirst().get();
         Path filPath = Paths.get(adImages, "3.jpg");
         HttpHeaders headers = new HttpHeaders();
@@ -402,8 +410,9 @@ class AdsControllerTestRestTemplateTest {
                 buildUrl("/ads/{id}/image"),
                 HttpMethod.PATCH,
                 request,
-                new ParameterizedTypeReference<>() {},
-                Map.of("id",adEntity.getId())
+                new ParameterizedTypeReference<>() {
+                },
+                Map.of("id", adEntity.getId())
         );
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -411,7 +420,7 @@ class AdsControllerTestRestTemplateTest {
 
     @Test
     void updateImageNegativeTest_IfForbiddenTest() {
-        UserEntity user = listUser.get(faker.random().nextInt(listUser.size()-1));
+        UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
         AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().equals(user)).findFirst().get();
         Path filPath = Paths.get(adImages, "3.jpg");
         HttpHeaders headers = new HttpHeaders();
@@ -424,15 +433,17 @@ class AdsControllerTestRestTemplateTest {
                 buildUrl("/ads{id}/image"),
                 HttpMethod.PATCH,
                 request,
-                new ParameterizedTypeReference<>() {},
-                Map.of("id",adEntity.getId())
+                new ParameterizedTypeReference<>() {
+                },
+                Map.of("id", adEntity.getId())
         );
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
+
     @Test
     void updateImageNegativeTest_IfNotFoundTest() {
-        UserEntity user = listUser.get(faker.random().nextInt(listUser.size()-1));
+        UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
         AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().equals(user)).findFirst().get();
         adEntity.setImage(null);
         Path filPath = Paths.get(adImages, "3.jpg");
@@ -443,31 +454,34 @@ class AdsControllerTestRestTemplateTest {
         body.add("image", fileSystemResource);
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
         ResponseEntity<String> response = restTemplate.withBasicAuth(user.getEmail(), "password").exchange(
-                buildUrl("/ads/-1/image"),
+                buildUrl("/ads/{id}/image"),
                 HttpMethod.PATCH,
                 request,
-                String.class
+                String.class,
+                Map.of("id", -1)
         );
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
+
     @Test
     void getAdImage() {
-        UserEntity userEntity = listUser.get(faker.random().nextInt(0, listUser.size()-1));
+        UserEntity userEntity = listUser.get(faker.random().nextInt(0, listUser.size() - 1));
         Path filePath = Paths.get(adImages, "2.jpg");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.add("Content_Type", MediaType.APPLICATION_JSON_VALUE);
         FileSystemResource fileSystemResource = new FileSystemResource(filePath);
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("image",fileSystemResource);
+        body.add("image", fileSystemResource);
         CreateOrUpdateAd createOrUpdateAd = new CreateOrUpdateAd();
         createOrUpdateAd.setDescription("Описание какого то товара");
-        createOrUpdateAd.setPrice(faker.random().nextInt(0,100));
+        createOrUpdateAd.setPrice(faker.random().nextInt(0, 100));
         createOrUpdateAd.setTitle("Какой то товар");
-        body.add("properties",createOrUpdateAd);
+        body.add("properties", createOrUpdateAd);
 
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body,headers);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
         ResponseEntity<Ad> createAd = restTemplate.withBasicAuth(userEntity.getEmail(), "password")
                 .postForEntity(buildUrl("/ads"),
                         requestEntity,
@@ -475,8 +489,8 @@ class AdsControllerTestRestTemplateTest {
 
         Ad adFormDb = createAd.getBody();
         Long id = adFormDb.getPk();
-        ResponseEntity<String> response = testRestTemplate.withBasicAuth(userEntity.getEmail(),"password")
-                .exchange(buildUrl("/ads/"+id+"/image"),
+        ResponseEntity<String> response = testRestTemplate.withBasicAuth(userEntity.getEmail(), "password")
+                .exchange(buildUrl("/ads/" + id + "/image"),
                         HttpMethod.GET,
                         null,
                         String.class);

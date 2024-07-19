@@ -148,8 +148,8 @@ public class AdsController {
     })
     @PreAuthorize("@checkAccessService.isAdminOrOwnerAd(#id, authentication)")
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<String>> updateImage(@PathVariable Long id,
-                                                    @RequestPart(value = "image") MultipartFile image) {
+    public ResponseEntity<List<String>> updateImage(@PathVariable("id") Long id,
+                                                    @RequestPart("image") MultipartFile image) {
         return ResponseEntity.ok().body(adsService.updateImage(id, image));
     }
 
@@ -167,7 +167,7 @@ public class AdsController {
             }
     )
     @GetMapping(value = "/{id}/image")
-    public ResponseEntity<?> getAdImage(@PathVariable Long id, HttpServletResponse response) throws MalformedURLException {
+    public ResponseEntity<?> getAdImage(@PathVariable("id") Long id, HttpServletResponse response) throws MalformedURLException {
         adsService.getImage(id, response);
         return ResponseEntity.ok().build();
     }

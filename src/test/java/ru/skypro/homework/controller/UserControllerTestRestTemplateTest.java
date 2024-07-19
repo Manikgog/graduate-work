@@ -1,4 +1,4 @@
-package ru.skypro.homework;
+package ru.skypro.homework.controller;
 
 import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
@@ -16,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import ru.skypro.homework.controller.AuthController;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.UserMapper;
