@@ -1,5 +1,6 @@
 package ru.skypro.homework.utils;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,19 @@ import java.util.Arrays;
 @AllArgsConstructor
 public class FileManager {
     private final WebSecurityConfig webSecurityConfig;
+
+    @PostConstruct
+    public void prepare() throws IOException {
+        Path userImagesPath = Paths.get(webSecurityConfig.getUserImagesFolder());
+        if (Files.notExists(userImagesPath)) {
+            Files.createDirectories(userImagesPath);
+        }
+        Path adImagesPath = Paths.get(webSecurityConfig.getAdImagesFolder());
+        if (Files.notExists(adImagesPath)) {
+            Files.createDirectories(adImagesPath);
+        }
+    }
+
 
     /**
      * Метод для записи файла с изображением на диск, а пути к этому файлу в базу данных.
@@ -75,7 +89,8 @@ public class FileManager {
      */
     public void getImage(Path path, HttpServletResponse response) {
         log.info("The getImage method of FileManager is called");
-        if(!Files.exists(path)){
+        if(Files.notExists(path)){
+            log.error("The image file was not found!");
             throw new ImageNotFoundException("Файл с изображением не найден!");
         }
         try(InputStream is = Files.newInputStream(path);

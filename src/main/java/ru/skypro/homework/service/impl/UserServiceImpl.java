@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,12 +23,17 @@ import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
+
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -42,6 +48,23 @@ public class UserServiceImpl implements UserService {
     private final CheckService checkService;
     private final WebSecurityConfig webSecurityConfig;
 
+    @PostConstruct
+    public void prepare() throws IOException {
+        Path userImagesFolder = Paths.get(webSecurityConfig.getUserImagesFolder());
+        List<String> allFilesList;
+        try(Stream<Path> st = Files.list(userImagesFolder)){
+            allFilesList = st.map(f -> f.getFileName().toString()).toList();
+        }
+
+        List<String> fileNamesFromDB = userRepo.findAll().stream().map(UserEntity::getImage).filter(Objects::nonNull).toList();
+        for (String fileName : allFilesList) {
+            if(fileNamesFromDB.contains(fileName)){
+                continue;
+            }
+            Path filePath = Paths.get(String.valueOf(userImagesFolder), fileName);
+            filePath.toFile().deleteOnExit();
+        }
+    }
 
     /**
      * Метод для установки нового пароля для входа
@@ -96,6 +119,10 @@ public class UserServiceImpl implements UserService {
     public URL getImage(Long id, HttpServletResponse response) throws MalformedURLException {
         log.info("The getPhoto method of UserServiceImpl is called");
         UserEntity userEntity = userRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id=" + id + " not found"));
+        if(userEntity.getImage() == null){
+            log.error("The file name is missing in the database");
+            throw new EntityNotFoundException("Photo of user not found");
+        }
         Path path = Paths.get(webSecurityConfig.getUserImagesFolder(), userEntity.getImage());
         fileManager.getImage(path, response);
         return path.toUri().toURL();
@@ -107,15 +134,15 @@ public class UserServiceImpl implements UserService {
      * @return User - объект пользователя
      */
     @Override
-    public User updateImage(MultipartFile image) {
+    public User updateImage(MultipartFile image) throws IOException {
         log.info("The updateImage method of setNewPassword is called");
         MyUserDetails userDetails = getUserDetails();
         UserEntity userEntity = userDetails.getUser();
         String userName = userEntity.getEmail();
         UserEntity userEntityFromDB = userRepo.findByEmail(userName).orElseThrow(() -> new EntityNotFoundException("User with id=" + userName + " not found"));
         String oldImageFileName = userEntityFromDB.getImage();
+        UUID uuid = UUID.randomUUID();
         if(oldImageFileName == null || oldImageFileName.isEmpty() || oldImageFileName.isBlank()){
-            UUID uuid = webSecurityConfig.getUuid();
             Path path = fileManager.uploadUserPhoto(uuid.toString(), image);
             String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
             userEntity.setImage(fileName);
@@ -124,19 +151,14 @@ public class UserServiceImpl implements UserService {
             user.setImage("/users/" + userEntityFromDB.getId() + "/image");
             return user;
         }
-        Path pathToOldImage = Paths.get(webSecurityConfig.getUserImagesFolder(), oldImageFileName);
-        Path path;
-        if(Files.exists(pathToOldImage)){
-            path = fileManager.uploadUserPhoto(oldImageFileName.substring(0, oldImageFileName.indexOf('.')), image);
-        }else {
-            UUID uuid = webSecurityConfig.getUuid();
-            path = fileManager.uploadUserPhoto(uuid.toString(), image);
-        }
+
+        Path path = fileManager.uploadUserPhoto(uuid.toString(), image);
         String fileName = path.toString().substring(path.toString().lastIndexOf("\\") + 1);
         userEntity.setImage(fileName);
         userEntityFromDB = userRepo.save(userEntity);
         User user = userMapper.toUser(userEntity);
         user.setImage("/users/" + userEntityFromDB.getId() + "/image");
+        prepare();
         return user;
     }
 

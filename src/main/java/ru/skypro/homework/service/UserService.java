@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.config.MyUserDetails;
 import ru.skypro.homework.dto.*;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -15,7 +16,7 @@ public interface UserService {
 
     UpdateUser updateUser(UpdateUser userPatch);
 
-    User updateImage(MultipartFile animalPhoto);
+    User updateImage(MultipartFile animalPhoto) throws IOException;
 
     MyUserDetails getUserDetails();
 

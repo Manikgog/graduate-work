@@ -15,6 +15,8 @@ import ru.skypro.homework.dto.NewPassword;
 import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
 import ru.skypro.homework.service.UserService;
+
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 @Slf4j
@@ -102,7 +104,7 @@ public class UserController {
                     content = @Content())
     })
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile image) {
+    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile image) throws IOException {
         log.info("The updateImage method of UserController is called");
         userService.updateImage(image);
         return ResponseEntity.ok().build();

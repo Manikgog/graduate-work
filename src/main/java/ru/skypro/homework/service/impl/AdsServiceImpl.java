@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,8 @@ import ru.skypro.homework.repository.CommentRepo;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.FileManager;
+
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -30,7 +33,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static ru.skypro.homework.constants.Constants.MAX_PRICE;
 import static ru.skypro.homework.constants.Constants.MIN_PRICE;
@@ -48,6 +53,25 @@ public class AdsServiceImpl implements AdsService{
     private final AdEntityToExtendedAdMapper adEntityToExtendedAdMapper;
     private final AdToAdEntity adToAdEntity;
     private final WebSecurityConfig webSecurityConfig;
+
+
+    @PostConstruct
+    public void prepare() throws IOException {
+        Path adImagesFolder = Paths.get(webSecurityConfig.getAdImagesFolder());
+        List<String> allFilesList;
+        try(Stream<Path> st = Files.list(adImagesFolder)){
+            allFilesList = st.map(f -> f.getFileName().toString()).toList();
+        }
+
+        List<String> fileNamesFromDB = adRepo.findAll().stream().map(AdEntity::getImage).filter(Objects::nonNull).toList();
+        for (String fileName : allFilesList) {
+            if(fileNamesFromDB.contains(fileName)){
+                continue;
+            }
+            Path filePath = Paths.get(String.valueOf(adImagesFolder), fileName);
+            filePath.toFile().deleteOnExit();
+        }
+    }
 
     /**
      * Метод для добавления объявления в базу данных
