@@ -41,7 +41,7 @@ public class CommentController {
                     content = @Content())
     })
     @GetMapping("/{id}/comments")
-    public ResponseEntity<Comments> get(@PathVariable Long id) {
+    public ResponseEntity<Comments> get(@PathVariable("id") Long id) {
         log.info("The get method of CommentController is called");
         return ResponseEntity.ok(commentService.get(id));
     }
@@ -62,7 +62,7 @@ public class CommentController {
                     content = @Content())
     })
     @PostMapping("/{id}/comments")
-    public ResponseEntity<Comment> create(@PathVariable Long id,
+    public ResponseEntity<Comment> create(@PathVariable("id") Long id,
                                           @RequestBody CreateOrUpdateComment newComment) {
         log.info("The create method of CommentController is called");
         return ResponseEntity.ok(commentService.create(id, newComment));
@@ -85,8 +85,8 @@ public class CommentController {
     })
     @PreAuthorize("@checkAccessService.isAdminOrOwnerComment(#adId, #commentId, authentication)")
     @DeleteMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<?> delete(@PathVariable Long adId,
-                                    @PathVariable Long commentId) {
+    public ResponseEntity<?> delete(@PathVariable("adId") Long adId,
+                                    @PathVariable("commentId") Long commentId) {
         log.info("The delete method of CommentController is called");
         commentService.delete(adId, commentId);
         return ResponseEntity.ok().build();
@@ -112,8 +112,8 @@ public class CommentController {
     })
     @PreAuthorize("@checkAccessService.isAdminOrOwnerComment(#adId, #commentId, authentication)")
     @PatchMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<Comment> update(@PathVariable Long adId,
-                                          @PathVariable Long commentId,
+    public ResponseEntity<Comment> update(@PathVariable(value = "adId") Long adId,
+                                          @PathVariable(value = "commentId") Long commentId,
                                           @RequestBody CreateOrUpdateComment newComment) {
         log.info("The update method of CommentController is called");
         return ResponseEntity.ok(commentService.update(adId, commentId, newComment));

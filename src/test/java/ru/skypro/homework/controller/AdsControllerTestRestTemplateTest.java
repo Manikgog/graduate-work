@@ -27,10 +27,7 @@ import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.impl.AdsServiceImpl;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -114,7 +111,11 @@ class AdsControllerTestRestTemplateTest {
             UserEntity userEntity = new UserEntity();
             userEntity.setFirstName(faker.name().firstName());
             userEntity.setLastName(faker.name().lastName());
-            userEntity.setEmail(faker.internet().emailAddress());
+            String email = faker.internet().emailAddress();
+            while (email.length() > 30){
+                email = faker.internet().emailAddress();
+            }
+            userEntity.setEmail(email);
             userEntity.setPassword("password");
             userEntity.setPhone(getPhoneNumber());
             if (i == COUNT_USER - 1) {
@@ -378,8 +379,8 @@ class AdsControllerTestRestTemplateTest {
 
 
     @Test
-    void updateImagePositiveTest() {
-        UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
+    void updateImagePositiveTest() throws InterruptedException {
+        UserEntity user = userRepo.findAll().stream().toList().get(faker.random().nextInt(listUser.size() - 1));
         AdEntity adEntity = adRepo.findAll().stream().filter(adEntity1 -> adEntity1.getAuthor().getEmail().equals(user.getEmail())).findFirst().get();
         Path filPath = Paths.get(adImages, "3.jpg");
         HttpHeaders headers = new HttpHeaders();
@@ -402,8 +403,9 @@ class AdsControllerTestRestTemplateTest {
 
 
     @Test
-    void updateImageNegativeTest_IfUserUnauthorizedTest() {
+    void updateImageNegativeTest_IfUserUnauthorizedTest() throws InterruptedException {
         UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
+        Thread.sleep(100);
         AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().equals(user)).findFirst().get();
         Path filPath = Paths.get(adImages, "3.jpg");
         HttpHeaders headers = new HttpHeaders();
@@ -427,7 +429,7 @@ class AdsControllerTestRestTemplateTest {
     @Test
     void updateImageNegativeTest_IfForbiddenTest() {
         UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
-        AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().equals(user)).findFirst().get();
+        AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().getEmail().equals(user.getEmail())).findFirst().get();
         Path filPath = Paths.get(adImages, "3.jpg");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -448,8 +450,9 @@ class AdsControllerTestRestTemplateTest {
     }
 
     @Test
-    void updateImageNegativeTest_IfNotFoundTest() {
+    void updateImageNegativeTest_IfNotFoundTest() throws InterruptedException {
         UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
+        Thread.sleep(100);
         AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().equals(user)).findFirst().get();
         adEntity.setImage(null);
         Path filPath = Paths.get(adImages, "3.jpg");

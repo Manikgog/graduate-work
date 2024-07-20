@@ -91,7 +91,7 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Not found")})
     @PreAuthorize("@checkAccessService.isAdminOrOwnerAd(#id, authentication)")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAds(@PathVariable Long id) {
+    public ResponseEntity<?> deleteAds(@PathVariable("id") Long id) {
         log.info("The deleteAds method of AdsController is called");
         adsService.deleteAd(id);
         return ResponseEntity.ok().build();
