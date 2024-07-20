@@ -54,8 +54,8 @@ public class AdsController {
 
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content())})
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Ad> createAd(@RequestPart("properties") @Valid CreateOrUpdateAd ad,
-                                       @RequestPart("image") MultipartFile image) {
+    public ResponseEntity<Ad> createAd(@RequestPart(value = "properties") @Valid CreateOrUpdateAd ad,
+                                       @RequestPart(value = "image") MultipartFile image) {
         log.info("The createAd method of AdsController is called");
         return ResponseEntity.status(HttpStatus.CREATED).body(adsService.createAd(ad, image));
     }

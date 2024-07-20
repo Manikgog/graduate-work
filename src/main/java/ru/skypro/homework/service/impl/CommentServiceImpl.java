@@ -68,9 +68,10 @@ public class CommentServiceImpl implements CommentService {
         commentEntity.setAd(adEntity);
         commentEntity.setCreatedAt(Instant.now().toEpochMilli());
         commentEntity.setText(newComment.getText());
-        commentRepo.save(commentEntity);
-
-        return commentMapper.commentEntityToComment(commentEntity);
+        CommentEntity commentEntityFromDB = commentRepo.save(commentEntity);
+        Comment comment = commentMapper.commentEntityToComment(commentEntity);
+        comment.setAuthorImage("/users/" + commentEntityFromDB.getAuthor().getId() + "/image");
+        return comment;
     }
 
     /**

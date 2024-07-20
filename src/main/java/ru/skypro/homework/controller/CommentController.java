@@ -85,8 +85,8 @@ public class CommentController {
     })
     @PreAuthorize("@checkAccessService.isAdminOrOwnerComment(#adId, #commentId, authentication)")
     @DeleteMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<?> delete(@PathVariable("adId") Long adId,
-                                    @PathVariable("commentId") Long commentId) {
+    public ResponseEntity<?> delete(@PathVariable(value = "adId") Long adId,
+                                    @PathVariable(value = "commentId") Long commentId) {
         log.info("The delete method of CommentController is called");
         commentService.delete(adId, commentId);
         return ResponseEntity.ok().build();
