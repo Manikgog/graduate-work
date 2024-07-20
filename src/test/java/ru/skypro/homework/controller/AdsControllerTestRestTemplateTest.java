@@ -25,6 +25,8 @@ import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepo;
 import ru.skypro.homework.repository.UserRepo;
 import ru.skypro.homework.service.impl.AdsServiceImpl;
+
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -65,6 +67,7 @@ class AdsControllerTestRestTemplateTest {
     private final Faker faker = new Faker();
     private final static int COUNT_AD = 10;
     private final static int COUNT_USER = 5;
+    private final String FILENAME = "2.jpg";
 
     private final List<AdEntity> listAd = new ArrayList<>();
     private final List<UserEntity> listUser = new ArrayList<>();
@@ -81,6 +84,13 @@ class AdsControllerTestRestTemplateTest {
     public void setUp() {
         createUserEntity();
         createAdEntity();
+        try {
+            String str = "Some write file Example";
+            byte[] bs = str.getBytes();
+            Files.write(Paths.get(adImagesFolder, FILENAME), bs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @AfterEach
@@ -381,7 +391,7 @@ class AdsControllerTestRestTemplateTest {
     void updateImagePositiveTest() {
         UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
         AdEntity adEntity = adRepo.findAll().stream().filter(adEntity1 -> adEntity1.getAuthor().getEmail().equals(user.getEmail())).findFirst().get();
-        Path filPath = Paths.get(adImages, "3.jpg");
+        Path filPath = Paths.get(adImages, FILENAME);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         FileSystemResource fileSystemResource = new FileSystemResource(filPath);
@@ -405,7 +415,7 @@ class AdsControllerTestRestTemplateTest {
     void updateImageNegativeTest_IfUserUnauthorizedTest() {
         UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
         AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().equals(user)).findFirst().get();
-        Path filPath = Paths.get(adImages, "3.jpg");
+        Path filPath = Paths.get(adImages, FILENAME);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         FileSystemResource fileSystemResource = new FileSystemResource(filPath);
@@ -428,7 +438,7 @@ class AdsControllerTestRestTemplateTest {
     void updateImageNegativeTest_IfForbiddenTest() {
         UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
         AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().equals(user)).findFirst().get();
-        Path filPath = Paths.get(adImages, "3.jpg");
+        Path filPath = Paths.get(adImages, FILENAME);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         FileSystemResource fileSystemResource = new FileSystemResource(filPath);
@@ -452,7 +462,7 @@ class AdsControllerTestRestTemplateTest {
         UserEntity user = listUser.get(faker.random().nextInt(listUser.size() - 1));
         AdEntity adEntity = listAd.stream().filter(adEntity1 -> adEntity1.getAuthor().equals(user)).findFirst().get();
         adEntity.setImage(null);
-        Path filPath = Paths.get(adImages, "3.jpg");
+        Path filPath = Paths.get(adImages, FILENAME);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         FileSystemResource fileSystemResource = new FileSystemResource(filPath);
@@ -474,7 +484,7 @@ class AdsControllerTestRestTemplateTest {
     @Test
     void getAdImage() {
         UserEntity userEntity = listUser.get(faker.random().nextInt(0, listUser.size() - 1));
-        Path filePath = Paths.get(adImages, "2.jpg");
+        Path filePath = Paths.get(adImages, FILENAME);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.add("Content_Type", MediaType.APPLICATION_JSON_VALUE);

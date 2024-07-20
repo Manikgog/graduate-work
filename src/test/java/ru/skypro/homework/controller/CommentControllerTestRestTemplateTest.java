@@ -80,8 +80,6 @@ class CommentControllerTestRestTemplateTest {
         register.setPhone(userEntity.getPhone());
         register.setRole(userEntity.getRole());
         authController.register(register);
-
-
     }
 
     @AfterEach

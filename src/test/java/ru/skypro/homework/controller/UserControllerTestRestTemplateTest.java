@@ -20,6 +20,8 @@ import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepo;
+
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -61,11 +63,20 @@ public class UserControllerTestRestTemplateTest {
 
     private final List<Register> users = new ArrayList<>();
 
+    private final String FILENAME = "1.jpg";
+
     @BeforeEach
     public void beforeEach() {
         createUsers();
         for (Register user : users) {
             authController.register(user);
+        }
+        try {
+            String str = "Some write file Example";
+            byte[] bs = str.getBytes();
+            Files.write(Paths.get(userImagesFolder, FILENAME), bs);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -199,7 +210,7 @@ public class UserControllerTestRestTemplateTest {
         UserEntity userEntity = userRepo.findAll().stream().findAny().get();
         String userName = userEntity.getEmail();
         String notEndodedPassword = users.stream().filter(u -> u.getUsername().equals(userEntity.getEmail())).findFirst().get().getPassword();
-        Path filePath = Paths.get(userImagesFolder, "1.jpg");
+        Path filePath = Paths.get(userImagesFolder, FILENAME);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         FileSystemResource fileSystemResource = new FileSystemResource(filePath);
@@ -236,7 +247,7 @@ public class UserControllerTestRestTemplateTest {
 
 
     private void uploadImage(String username, String password){
-        Path filePath = Paths.get(userImagesFolder, "1.jpg");
+        Path filePath = Paths.get(userImagesFolder, FILENAME);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         FileSystemResource fileSystemResource = new FileSystemResource(filePath);
