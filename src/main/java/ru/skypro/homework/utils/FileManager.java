@@ -23,6 +23,11 @@ import java.util.Arrays;
 public class FileManager {
     private final WebSecurityConfig webSecurityConfig;
 
+    /**
+     * Метод для создания папок для хранения изображений пользователей и объявлений
+     * если они не существуют
+     * @throws IOException - исключение при обращении с файлами
+     */
     @PostConstruct
     public void prepare() throws IOException {
         Path userImagesPath = Paths.get(webSecurityConfig.getUserImagesFolder());
