@@ -1,5 +1,9 @@
 package ru.skypro.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,8 +24,14 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @Operation(summary = "Авторизация пользователя" , responses = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content()),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content())
+    })
+    @Tag(name = "Авторизация")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Login login) {
+        log.info("The login method of AuthController is called");
         if (authService.login(login.getUsername(), login.getPassword())) {
             return ResponseEntity.ok().build();
         } else {
@@ -29,8 +39,14 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Регистрация пользователя" , responses = {
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content()),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content())
+    })
+    @Tag(name = "Регистрация")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Register register) {
+        log.info("The register method of AuthController is called");
         if (authService.register(register)) {
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {

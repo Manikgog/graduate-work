@@ -39,4 +39,3 @@ java -jar ads-0.0.1-SNAPSHOT.jar --spring.datasource.url=URL_OF_DATABASE
   - Docker
 
 Над приложением работали: Гоголин Максим (https://github.com/Manikgog), Роман Ветчанин (https://github.com/Roman-Vetchanin), Александр Дубограев (https://github.com/ASanderD).
-

@@ -5,11 +5,12 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Login {
-    @Schema(minLength = 8, maxLength = 16, description = "пароль")
-    String password;
-    @Schema(minLength = 4, maxLength = 32, description = "логин")
-    String username;
+public class Comments {
+    @Schema(description = "общее количество комментариев")
+    int count;
+    List<Comment> results;
 }
