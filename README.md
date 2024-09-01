@@ -25,6 +25,7 @@ java -jar ads-0.0.1-SNAPSHOT.jar --spring.datasource.url=URL_OF_DATABASE
   - Spring Boot
   - Spring Web
   - Spring Data JPA
+  - Spring Security
   - REST
   - Git
   - Swagger
